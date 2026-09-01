@@ -7,6 +7,7 @@ export type Item = {
   estado: EstadoItem;
   texto: string;
   cantidad: number;
+  enlace: string | null;
   createdAt: string;
   updatedAt: string;
   asignadoAId: string | null;
@@ -46,7 +47,7 @@ export async function crearItem(
 
 export async function actualizarItem(
   id: string,
-  cambios: { estado?: EstadoItem; asignadoAId?: string | null; cantidad?: number }
+  cambios: { estado?: EstadoItem; asignadoAId?: string | null; cantidad?: number; enlace?: string | null }
 ): Promise<Item> {
   const res = await fetch(`/api/items/${id}`, {
     method: "PATCH",

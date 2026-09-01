@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import type { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { estadoValidoParaTipo, normalizarCantidad } from "@/lib/items";
+import { enlaceValido, estadoValidoParaTipo, normalizarCantidad } from "@/lib/items";
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
@@ -36,6 +36,16 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
   if ("cantidad" in body) {
     data.cantidad = normalizarCantidad(body.cantidad);
+  }
+
+  if ("enlace" in body) {
+    if (body.enlace === null) {
+      data.enlace = null;
+    } else if (typeof body.enlace === "string" && enlaceValido(body.enlace)) {
+      data.enlace = body.enlace.trim();
+    } else {
+      return NextResponse.json({ error: "enlace inválido" }, { status: 400 });
+    }
   }
 
   if (Object.keys(data).length === 0) {

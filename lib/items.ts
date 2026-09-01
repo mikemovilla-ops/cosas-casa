@@ -22,3 +22,7 @@ export function normalizarCantidad(valor: unknown): number {
   const n = Number(valor);
   return Number.isInteger(n) && n >= 1 ? n : 1;
 }
+
+export function enlaceValido(valor: string): boolean {
+  return /^https?:\/\/.+/i.test(valor.trim());
+}

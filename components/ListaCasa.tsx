@@ -13,6 +13,7 @@ import {
 import { usePoll } from "@/lib/use-poll";
 import AsignadoBadge from "./AsignadoBadge";
 import CantidadStepper from "./CantidadStepper";
+import EnlaceCasa from "./EnlaceCasa";
 
 // Tailwind necesita las clases completas y estáticas en el código para
 // detectarlas al compilar — de ahí el mapa en vez de construir el nombre
@@ -66,6 +67,12 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
   async function asignar(item: Item, nuevoAsignadoAId: string | null) {
     setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, asignadoAId: nuevoAsignadoAId } : i)));
     await actualizarItem(item.id, { asignadoAId: nuevoAsignadoAId });
+    reload();
+  }
+
+  async function cambiarEnlace(item: Item, enlace: string | null) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, enlace } : i)));
+    await actualizarItem(item.id, { enlace });
     reload();
   }
 
@@ -140,7 +147,7 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                   .filter((i) => i.estado === cat.estado)
                   .map((item) => (
                     <li key={item.id} className="px-3 py-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <AsignadoBadge
                           usuarios={usuarios}
                           asignadoAId={item.asignadoAId}
@@ -148,6 +155,7 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                         />
                         <span className="flex-1">{item.texto}</span>
                         <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
+                        <EnlaceCasa enlace={item.enlace} onChange={(url) => cambiarEnlace(item, url)} />
                         <button
                           onClick={() => eliminar(item.id)}
                           aria-label="Eliminar"

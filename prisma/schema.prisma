@@ -91,6 +91,8 @@ model Item {
   estado    EstadoItem
   texto     String
   cantidad  Int        @default(1)
+  // Enlace a la tienda donde se compra, solo se usa en items de CASA.
+  enlace    String?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
