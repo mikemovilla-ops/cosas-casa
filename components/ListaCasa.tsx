@@ -182,7 +182,11 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                             <button
                               key={c.estado}
                               onClick={() => mover(item, c.estado)}
-                              className="text-xs text-ink/50 border border-sand rounded px-1.5 py-0.5 hover:border-sage hover:text-sagedark transition"
+                              className={`text-xs rounded px-1.5 py-0.5 border transition ${
+                                c.estado === "COMPRADO"
+                                  ? "border-emerald-600/40 text-emerald-600 hover:bg-emerald-600 hover:text-white"
+                                  : "border-sand text-ink/50 hover:border-sage hover:text-sagedark"
+                              }`}
                             >
                               → {c.label}
                             </button>
