@@ -28,7 +28,10 @@ const CATEGORIAS: { estado: EstadoItem; label: string; textClass: string }[] = [
 // un estado al que se llega marcándolo, no de alta. Pero sí se muestra como
 // columna y como destino al mover, para poder pasar cualquier urgencia
 // directamente a comprado (y deshacerlo si hace falta).
-const COLUMNAS = [...CATEGORIAS, { estado: "COMPRADO" as EstadoItem, label: "Comprado ✓", textClass: "text-ink/40" }];
+const COLUMNAS = [
+  ...CATEGORIAS,
+  { estado: "COMPRADO" as EstadoItem, label: "Comprado ✓", textClass: "text-emerald-600" },
+];
 
 export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
   const { items, setItems, reload } = usePoll<Item>(() => fetchItems("CASA"));
@@ -161,7 +164,7 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                             asignadoAId={item.asignadoAId}
                             onChange={(id) => asignar(item, id)}
                           />
-                          <span className={`flex-1 ${comprado ? "line-through text-ink/40" : ""}`}>
+                          <span className={`flex-1 ${comprado ? "line-through text-emerald-600/70" : ""}`}>
                             {item.texto}
                           </span>
                           <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
