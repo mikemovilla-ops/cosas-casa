@@ -12,6 +12,8 @@ const config: Config = {
         sagedark: "#4F6B54",
         clay: "#C1694F",
         mustard: "#D6A24C",
+        personaA: "#4A7FA7",
+        personaB: "#B5566B",
       },
     },
   },

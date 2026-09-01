@@ -6,8 +6,16 @@ export type Item = {
   tipo: TipoLista;
   estado: EstadoItem;
   texto: string;
+  cantidad: number;
   createdAt: string;
   updatedAt: string;
+  asignadoAId: string | null;
+};
+
+export type Usuario = {
+  id: string;
+  name: string | null;
+  email: string | null;
 };
 
 export async function fetchItems(tipo: TipoLista): Promise<Item[]> {
@@ -16,21 +24,34 @@ export async function fetchItems(tipo: TipoLista): Promise<Item[]> {
   return res.json();
 }
 
-export async function crearItem(tipo: TipoLista, texto: string, estado?: EstadoItem): Promise<Item> {
+export async function fetchUsuarios(): Promise<Usuario[]> {
+  const res = await fetch("/api/usuarios");
+  if (!res.ok) throw new Error("Error al cargar los usuarios");
+  return res.json();
+}
+
+export async function crearItem(
+  tipo: TipoLista,
+  texto: string,
+  opciones?: { estado?: EstadoItem; asignadoAId?: string | null; cantidad?: number }
+): Promise<Item> {
   const res = await fetch("/api/items", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ tipo, texto, estado }),
+    body: JSON.stringify({ tipo, texto, ...opciones }),
   });
   if (!res.ok) throw new Error("Error al añadir el item");
   return res.json();
 }
 
-export async function actualizarEstado(id: string, estado: EstadoItem): Promise<Item> {
+export async function actualizarItem(
+  id: string,
+  cambios: { estado?: EstadoItem; asignadoAId?: string | null; cantidad?: number }
+): Promise<Item> {
   const res = await fetch(`/api/items/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ estado }),
+    body: JSON.stringify(cambios),
   });
   if (!res.ok) throw new Error("Error al actualizar el item");
   return res.json();

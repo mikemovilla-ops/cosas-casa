@@ -1,12 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { actualizarEstado, crearItem, eliminarItem, fetchItems, type Item } from "@/lib/api-client";
+import { actualizarItem, crearItem, eliminarItem, fetchItems, type Item, type Usuario } from "@/lib/api-client";
 import { usePoll } from "@/lib/use-poll";
+import AsignadoBadge from "./AsignadoBadge";
+import CantidadStepper from "./CantidadStepper";
 
-export default function ListaCompra() {
+export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
   const { items, setItems, reload } = usePoll<Item>(() => fetchItems("COMPRA"));
   const [texto, setTexto] = useState("");
+  const [cantidad, setCantidad] = useState(1);
+  const [asignadoAId, setAsignadoAId] = useState("");
   const [enviando, setEnviando] = useState(false);
 
   const aComprar = items.filter((i) => i.estado === "A_COMPRAR");
@@ -19,17 +23,30 @@ export default function ListaCompra() {
     setEnviando(true);
     setTexto("");
     try {
-      const nuevo = await crearItem("COMPRA", valor);
+      const nuevo = await crearItem("COMPRA", valor, { cantidad, asignadoAId: asignadoAId || null });
       setItems((prev) => [...prev, nuevo]);
+      setCantidad(1);
     } finally {
       setEnviando(false);
     }
   }
 
+  async function cambiarCantidad(item: Item, nuevaCantidad: number) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, cantidad: nuevaCantidad } : i)));
+    await actualizarItem(item.id, { cantidad: nuevaCantidad });
+    reload();
+  }
+
   async function toggle(item: Item) {
     const nuevoEstado = item.estado === "A_COMPRAR" ? "COMPRADO" : "A_COMPRAR";
     setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, estado: nuevoEstado } : i)));
-    await actualizarEstado(item.id, nuevoEstado);
+    await actualizarItem(item.id, { estado: nuevoEstado });
+    reload();
+  }
+
+  async function asignar(item: Item, nuevoAsignadoAId: string | null) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, asignadoAId: nuevoAsignadoAId } : i)));
+    await actualizarItem(item.id, { asignadoAId: nuevoAsignadoAId });
     reload();
   }
 
@@ -40,13 +57,33 @@ export default function ListaCompra() {
 
   return (
     <div>
-      <form onSubmit={onSubmit} className="flex gap-2 mb-6">
+      <form onSubmit={onSubmit} className="flex flex-wrap gap-2 mb-6">
         <input
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="¿Qué necesitamos comprar?"
-          className="flex-1 rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="flex-1 min-w-[10rem] rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
         />
+        <input
+          type="number"
+          min={1}
+          value={cantidad}
+          onChange={(e) => setCantidad(Math.max(1, Number(e.target.value) || 1))}
+          aria-label="Cantidad"
+          className="w-16 rounded-md border border-sand px-2 py-2 bg-white focus:border-sage outline-none"
+        />
+        <select
+          value={asignadoAId}
+          onChange={(e) => setAsignadoAId(e.target.value)}
+          className="rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+        >
+          <option value="">Los dos</option>
+          {usuarios.map((u) => (
+            <option key={u.id} value={u.id}>
+              {u.name?.split(" ")[0] ?? u.email}
+            </option>
+          ))}
+        </select>
         <button
           type="submit"
           disabled={!texto.trim() || enviando}
@@ -61,7 +98,10 @@ export default function ListaCompra() {
           titulo="A comprar"
           items={aComprar}
           vacio="No hay nada pendiente 🎉"
+          usuarios={usuarios}
           onToggle={toggle}
+          onAsignar={asignar}
+          onCantidad={cambiarCantidad}
           onEliminar={eliminar}
           tachado={false}
         />
@@ -69,7 +109,10 @@ export default function ListaCompra() {
           titulo="Comprado"
           items={comprado}
           vacio="Nada comprado todavía"
+          usuarios={usuarios}
           onToggle={toggle}
+          onAsignar={asignar}
+          onCantidad={cambiarCantidad}
           onEliminar={eliminar}
           tachado
         />
@@ -82,14 +125,20 @@ function Columna({
   titulo,
   items,
   vacio,
+  usuarios,
   onToggle,
+  onAsignar,
+  onCantidad,
   onEliminar,
   tachado,
 }: {
   titulo: string;
   items: Item[];
   vacio: string;
+  usuarios: Usuario[];
   onToggle: (item: Item) => void;
+  onAsignar: (item: Item, asignadoAId: string | null) => void;
+  onCantidad: (item: Item, cantidad: number) => void;
   onEliminar: (id: string) => void;
   tachado: boolean;
 }) {
@@ -104,12 +153,18 @@ function Columna({
         <ul className="card divide-y divide-sand">
           {items.map((item) => (
             <li key={item.id} className="flex items-center gap-2 px-3 py-2">
+              <AsignadoBadge
+                usuarios={usuarios}
+                asignadoAId={item.asignadoAId}
+                onChange={(id) => onAsignar(item, id)}
+              />
               <button
                 onClick={() => onToggle(item)}
                 className={`flex-1 text-left ${tachado ? "line-through text-ink/40" : "text-ink"}`}
               >
                 {item.texto}
               </button>
+              <CantidadStepper cantidad={item.cantidad} onChange={(n) => onCantidad(item, n)} />
               <button
                 onClick={() => onEliminar(item.id)}
                 aria-label="Eliminar"

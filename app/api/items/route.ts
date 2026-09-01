@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import type { TipoLista } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ESTADO_INICIAL, estadoValidoParaTipo } from "@/lib/items";
+import { ESTADO_INICIAL, estadoValidoParaTipo, normalizarCantidad } from "@/lib/items";
 
 const TIPOS: TipoLista[] = ["COMPRA", "CASA"];
 
@@ -39,8 +39,17 @@ export async function POST(request: Request) {
       ? body.estado
       : ESTADO_INICIAL[tipo];
 
+  let asignadoAId: string | null = null;
+  if (typeof body.asignadoAId === "string" && body.asignadoAId) {
+    const asignado = await prisma.user.findUnique({ where: { id: body.asignadoAId } });
+    if (!asignado) return NextResponse.json({ error: "asignadoAId inválido" }, { status: 400 });
+    asignadoAId = asignado.id;
+  }
+
+  const cantidad = normalizarCantidad(body.cantidad);
+
   const item = await prisma.item.create({
-    data: { tipo, texto, estado, creadoPorId: session.user.id },
+    data: { tipo, texto, estado, cantidad, creadoPorId: session.user.id, asignadoAId },
   });
   return NextResponse.json(item, { status: 201 });
 }

@@ -15,3 +15,10 @@ export const ESTADO_INICIAL: Record<TipoLista, EstadoItem> = {
 export function estadoValidoParaTipo(tipo: TipoLista, estado: string): estado is EstadoItem {
   return (ESTADOS_POR_TIPO[tipo] as string[]).includes(estado);
 }
+
+// Entero positivo o 1 por defecto — nunca se deja una cantidad <= 0, para
+// eso está el botón de borrar el item.
+export function normalizarCantidad(valor: unknown): number {
+  const n = Number(valor);
+  return Number.isInteger(n) && n >= 1 ? n : 1;
+}

@@ -1,11 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { fetchUsuarios, type Usuario } from "@/lib/api-client";
+import { usePoll } from "@/lib/use-poll";
 import ListaCompra from "./ListaCompra";
 import ListaCasa from "./ListaCasa";
 
 export default function ListasApp() {
   const [vista, setVista] = useState<"compra" | "casa">("compra");
+  // Cambia poco (solo cuando alguien inicia sesión por primera vez), así que
+  // basta con sondearlo cada 30s en vez de cada 4s como los items.
+  const { items: usuarios } = usePoll<Usuario>(fetchUsuarios, 30000);
 
   return (
     <div>
@@ -18,7 +23,7 @@ export default function ListasApp() {
         </TabButton>
       </div>
 
-      {vista === "compra" ? <ListaCompra /> : <ListaCasa />}
+      {vista === "compra" ? <ListaCompra usuarios={usuarios} /> : <ListaCasa usuarios={usuarios} />}
     </div>
   );
 }
