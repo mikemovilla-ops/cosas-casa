@@ -9,7 +9,7 @@ export default function Navbar() {
   return (
     <header className="border-b border-sand bg-white">
       <div className="max-w-3xl mx-auto flex items-center justify-between px-4 py-3">
-        <span className="font-semibold text-lg text-sagedark">🏡 Nuestra Casa</span>
+        <span className="font-semibold text-lg text-sagedark">🏡 Nuestra Casa (C&amp;M)</span>
 
         {status === "authenticated" ? (
           <div className="flex items-center gap-2">

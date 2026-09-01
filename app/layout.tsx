@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 const body = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Nuestra Casa",
+  title: "Nuestra Casa (C&M)",
   description: "Lista de la compra y cosas pendientes para casa, compartidas entre los dos",
 };
 
