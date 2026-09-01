@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="theme-color" content="#3a7d5c" />
+  <title>Nuestra casa</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1 id="page-title">🛒 Lista de la compra</h1>
+    <nav class="tabs">
+      <button class="tab-btn active" data-view="compra">🛒 Compra</button>
+      <button class="tab-btn" data-view="casa">🏠 Casa</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- VISTA: LISTA DE LA COMPRA -->
+    <section id="view-compra" class="view active">
+      <form id="form-compra" class="add-form">
+        <input
+          id="input-compra"
+          type="text"
+          placeholder="¿Qué necesitamos comprar?"
+          autocomplete="off"
+          required
+        />
+        <button type="submit">Añadir</button>
+      </form>
+
+      <div class="columns">
+        <div class="column">
+          <h2>A comprar <span class="count" id="count-a_comprar">0</span></h2>
+          <ul class="item-list" id="list-a_comprar"></ul>
+          <p class="empty-hint" id="empty-a_comprar">No hay nada pendiente 🎉</p>
+        </div>
+        <div class="column column-done">
+          <h2>Comprado <span class="count" id="count-comprado">0</span></h2>
+          <ul class="item-list" id="list-comprado"></ul>
+          <p class="empty-hint" id="empty-comprado">Nada comprado todavía</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VISTA: LISTA DE COSAS PARA LA CASA -->
+    <section id="view-casa" class="view">
+      <form id="form-casa" class="add-form">
+        <input
+          id="input-casa"
+          type="text"
+          placeholder="¿Qué necesitamos para la casa?"
+          autocomplete="off"
+          required
+        />
+        <select id="select-casa">
+          <option value="urgente">Urgente</option>
+          <option value="medio" selected>Medio plazo</option>
+          <option value="largo">Largo plazo</option>
+        </select>
+        <button type="submit">Añadir</button>
+      </form>
+
+      <div class="columns columns-3">
+        <div class="column column-urgente">
+          <h2>Urgente <span class="count" id="count-urgente">0</span></h2>
+          <ul class="item-list" id="list-urgente"></ul>
+          <p class="empty-hint" id="empty-urgente">Nada urgente</p>
+        </div>
+        <div class="column column-medio">
+          <h2>Medio plazo <span class="count" id="count-medio">0</span></h2>
+          <ul class="item-list" id="list-medio"></ul>
+          <p class="empty-hint" id="empty-medio">Nada por aquí</p>
+        </div>
+        <div class="column column-largo">
+          <h2>Largo plazo <span class="count" id="count-largo">0</span></h2>
+          <ul class="item-list" id="list-largo"></ul>
+          <p class="empty-hint" id="empty-largo">Nada por aquí</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <p id="status-msg" class="status-msg"></p>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

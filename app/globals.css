@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #fbf7f0;
+    color: #2b2620;
+  }
+
+  :focus-visible {
+    outline: 2px solid #6b8f71;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white border border-sand rounded-xl shadow-sm;
+  }
+}
