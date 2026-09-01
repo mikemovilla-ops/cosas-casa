@@ -24,6 +24,12 @@ const CATEGORIAS: { estado: EstadoItem; label: string; textClass: string }[] = [
   { estado: "LARGO", label: "Largo plazo", textClass: "text-sagedark" },
 ];
 
+// Al añadir un item solo tiene sentido elegir una urgencia — "Comprado" es
+// un estado al que se llega marcándolo, no de alta. Pero sí se muestra como
+// columna y como destino al mover, para poder pasar cualquier urgencia
+// directamente a comprado (y deshacerlo si hace falta).
+const COLUMNAS = [...CATEGORIAS, { estado: "COMPRADO" as EstadoItem, label: "Comprado ✓", textClass: "text-ink/40" }];
+
 export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
   const { items, setItems, reload } = usePoll<Item>(() => fetchItems("CASA"));
   const [texto, setTexto] = useState("");
@@ -130,57 +136,62 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
         </button>
       </form>
 
-      <div className="grid sm:grid-cols-3 gap-6">
-        {CATEGORIAS.map((cat) => (
-          <div key={cat.estado}>
-            <h2 className={`font-semibold mb-2 ${cat.textClass}`}>
-              {cat.label}{" "}
-              <span className="text-ink/40 font-normal">
-                ({items.filter((i) => i.estado === cat.estado).length})
-              </span>
-            </h2>
-            {items.filter((i) => i.estado === cat.estado).length === 0 ? (
-              <p className="text-ink/40 text-sm italic">Nada por aquí</p>
-            ) : (
-              <ul className="card divide-y divide-sand">
-                {items
-                  .filter((i) => i.estado === cat.estado)
-                  .map((item) => (
-                    <li key={item.id} className="px-3 py-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <AsignadoBadge
-                          usuarios={usuarios}
-                          asignadoAId={item.asignadoAId}
-                          onChange={(id) => asignar(item, id)}
-                        />
-                        <span className="flex-1">{item.texto}</span>
-                        <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
-                        <EnlaceCasa enlace={item.enlace} onChange={(url) => cambiarEnlace(item, url)} />
-                        <button
-                          onClick={() => eliminar(item.id)}
-                          aria-label="Eliminar"
-                          className="text-ink/30 hover:text-clay transition px-1"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                      <div className="flex gap-1 mt-1">
-                        {CATEGORIAS.filter((c) => c.estado !== item.estado).map((c) => (
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {COLUMNAS.map((cat) => {
+          const comprado = cat.estado === "COMPRADO";
+          return (
+            <div key={cat.estado}>
+              <h2 className={`font-semibold mb-2 ${cat.textClass}`}>
+                {cat.label}{" "}
+                <span className="text-ink/40 font-normal">
+                  ({items.filter((i) => i.estado === cat.estado).length})
+                </span>
+              </h2>
+              {items.filter((i) => i.estado === cat.estado).length === 0 ? (
+                <p className="text-ink/40 text-sm italic">Nada por aquí</p>
+              ) : (
+                <ul className="card divide-y divide-sand">
+                  {items
+                    .filter((i) => i.estado === cat.estado)
+                    .map((item) => (
+                      <li key={item.id} className="px-3 py-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <AsignadoBadge
+                            usuarios={usuarios}
+                            asignadoAId={item.asignadoAId}
+                            onChange={(id) => asignar(item, id)}
+                          />
+                          <span className={`flex-1 ${comprado ? "line-through text-ink/40" : ""}`}>
+                            {item.texto}
+                          </span>
+                          <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
+                          <EnlaceCasa enlace={item.enlace} onChange={(url) => cambiarEnlace(item, url)} />
                           <button
-                            key={c.estado}
-                            onClick={() => mover(item, c.estado)}
-                            className="text-xs text-ink/50 border border-sand rounded px-1.5 py-0.5 hover:border-sage hover:text-sagedark transition"
+                            onClick={() => eliminar(item.id)}
+                            aria-label="Eliminar"
+                            className="text-ink/30 hover:text-clay transition px-1"
                           >
-                            → {c.label}
+                            ✕
                           </button>
-                        ))}
-                      </div>
-                    </li>
-                  ))}
-              </ul>
-            )}
-          </div>
-        ))}
+                        </div>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
+                            <button
+                              key={c.estado}
+                              onClick={() => mover(item, c.estado)}
+                              className="text-xs text-ink/50 border border-sand rounded px-1.5 py-0.5 hover:border-sage hover:text-sagedark transition"
+                            >
+                              → {c.label}
+                            </button>
+                          ))}
+                        </div>
+                      </li>
+                    ))}
+                </ul>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

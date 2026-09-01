@@ -4,7 +4,7 @@ import type { EstadoItem, TipoLista } from "@prisma/client";
 // un item de COMPRA acabe con estado URGENTE por un body manipulado a mano.
 const ESTADOS_POR_TIPO: Record<TipoLista, EstadoItem[]> = {
   COMPRA: ["A_COMPRAR", "COMPRADO"],
-  CASA: ["URGENTE", "MEDIO", "LARGO"],
+  CASA: ["URGENTE", "MEDIO", "LARGO", "COMPRADO"],
 };
 
 export const ESTADO_INICIAL: Record<TipoLista, EstadoItem> = {
