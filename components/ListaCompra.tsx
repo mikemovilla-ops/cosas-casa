@@ -23,8 +23,8 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
   const [asignadoAId, setAsignadoAId] = useState("");
   const [enviando, setEnviando] = useState(false);
 
-  const aComprar = items.filter((i) => i.estado === "A_COMPRAR");
-  const comprado = items.filter((i) => i.estado === "COMPRADO");
+  const aComprar = items.filter((i) => i.estado === "A_COMPRAR").sort((a, b) => a.orden - b.orden);
+  const comprado = items.filter((i) => i.estado === "COMPRADO").sort((a, b) => a.orden - b.orden);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();

@@ -158,22 +158,18 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {COLUMNAS.map((cat) => {
           const comprado = cat.estado === "COMPRADO";
+          const itemsColumna = items
+            .filter((i) => i.estado === cat.estado)
+            .sort((a, b) => a.orden - b.orden);
           return (
             <div key={cat.estado}>
               <h2 className={`font-semibold mb-2 ${cat.textClass}`}>
-                {cat.label}{" "}
-                <span className="text-ink/40 font-normal">
-                  ({items.filter((i) => i.estado === cat.estado).length})
-                </span>
+                {cat.label} <span className="text-ink/40 font-normal">({itemsColumna.length})</span>
               </h2>
-              {items.filter((i) => i.estado === cat.estado).length === 0 ? (
+              {itemsColumna.length === 0 ? (
                 <p className="text-ink/40 text-sm italic">Nada por aquí</p>
               ) : (
-                <ListaOrdenable
-                  items={items.filter((i) => i.estado === cat.estado)}
-                  onReordenar={reordenar}
-                  className="card divide-y divide-sand"
-                >
+                <ListaOrdenable items={itemsColumna} onReordenar={reordenar} className="card divide-y divide-sand">
                   {(item) => (
                     <FilaOrdenable key={item.id} id={item.id} className="px-3 py-2">
                       {({ asaProps }) => (
