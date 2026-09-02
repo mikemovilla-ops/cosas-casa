@@ -28,6 +28,12 @@ export default function ListasApp() {
     await actualizarPerfil({ tareasDeudasActivado: true });
   }
 
+  async function desactivarTareasDeudas() {
+    setTareasDeudasActivado(false);
+    if (vista === "tareas" || vista === "deudas") setVista("compra");
+    await actualizarPerfil({ tareasDeudasActivado: false });
+  }
+
   return (
     <div>
       <div className="flex flex-wrap items-center gap-2 mb-6">
@@ -45,6 +51,13 @@ export default function ListasApp() {
             <TabButton activo={vista === "deudas"} onClick={() => setVista("deudas")}>
               💶 Deudas
             </TabButton>
+            <button
+              onClick={desactivarTareasDeudas}
+              title="Deja de mostrar las pestañas Tareas y Deudas (tus datos no se borran)"
+              className="text-xs text-ink/30 hover:text-clay underline underline-offset-2 ml-1"
+            >
+              Ocultar Tareas y Deudas
+            </button>
           </>
         )}
         {tareasDeudasActivado === false && (
