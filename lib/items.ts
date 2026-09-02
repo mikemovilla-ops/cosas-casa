@@ -42,3 +42,11 @@ export function importeValido(valor: unknown): number | null {
   if (!Number.isFinite(n) || n <= 0) return null;
   return Math.round(n * 100) / 100;
 }
+
+// Acepta "YYYY-MM-DD" (lo que da un <input type="date">) o cualquier ISO
+// completo; null si no viene o no es una fecha real.
+export function fechaValida(valor: unknown): Date | null {
+  if (typeof valor !== "string" || !valor) return null;
+  const d = new Date(valor);
+  return Number.isNaN(d.getTime()) ? null : d;
+}

@@ -105,9 +105,12 @@ model Item {
   cantidad  Int        @default(1)
   // Enlace a la tienda donde se compra, solo se usa en items de CASA.
   enlace    String?
-  // Solo para DEUDA: importe en euros y de qué dirección es la deuda.
+  // Solo para DEUDA: importe en euros, de qué dirección es la deuda, y en
+  // qué fecha se generó (editable por el usuario, no tiene por qué
+  // coincidir con createdAt si la apunta más tarde).
   importe   Float?
   meDeben   Boolean?
+  fecha     DateTime?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 

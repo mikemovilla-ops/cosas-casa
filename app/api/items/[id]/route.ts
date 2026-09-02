@@ -3,7 +3,14 @@ import { getServerSession } from "next-auth";
 import type { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { enlaceValido, estadoValidoParaTipo, importeValido, normalizarCantidad, TIPOS_PERSONALES } from "@/lib/items";
+import {
+  enlaceValido,
+  estadoValidoParaTipo,
+  fechaValida,
+  importeValido,
+  normalizarCantidad,
+  TIPOS_PERSONALES,
+} from "@/lib/items";
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
@@ -68,6 +75,12 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
   if ("meDeben" in body) {
     data.meDeben = body.meDeben === true;
+  }
+
+  if ("fecha" in body) {
+    const fecha = fechaValida(body.fecha);
+    if (!fecha) return NextResponse.json({ error: "fecha inválida" }, { status: 400 });
+    data.fecha = fecha;
   }
 
   if (Object.keys(data).length === 0) {

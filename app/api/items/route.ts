@@ -3,7 +3,14 @@ import { getServerSession } from "next-auth";
 import type { Prisma, TipoLista } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ESTADO_INICIAL, estadoValidoParaTipo, importeValido, normalizarCantidad, TIPOS_PERSONALES } from "@/lib/items";
+import {
+  ESTADO_INICIAL,
+  estadoValidoParaTipo,
+  fechaValida,
+  importeValido,
+  normalizarCantidad,
+  TIPOS_PERSONALES,
+} from "@/lib/items";
 
 const TIPOS: TipoLista[] = ["COMPRA", "CASA", "TAREA", "DEUDA"];
 
@@ -54,10 +61,12 @@ export async function POST(request: Request) {
 
   let importe: number | null = null;
   let meDeben: boolean | null = null;
+  let fecha: Date | null = null;
   if (tipo === "DEUDA") {
     importe = importeValido(body.importe);
     if (importe === null) return NextResponse.json({ error: "importe inválido" }, { status: 400 });
     meDeben = body.meDeben === true;
+    fecha = fechaValida(body.fecha) ?? new Date();
   }
 
   const item = await prisma.item.create({
@@ -70,6 +79,7 @@ export async function POST(request: Request) {
       asignadoAId,
       importe,
       meDeben,
+      fecha,
     },
   });
   return NextResponse.json(item, { status: 201 });

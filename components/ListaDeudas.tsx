@@ -4,9 +4,14 @@ import { useState } from "react";
 import { actualizarItem, crearItem, eliminarItem, fetchItems, type Item } from "@/lib/api-client";
 import { usePoll } from "@/lib/use-poll";
 import NombreEditable from "./NombreEditable";
+import FechaEditable from "./FechaEditable";
 
 function euros(n: number) {
   return n.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
+}
+
+function hoy() {
+  return new Date().toISOString().slice(0, 10);
 }
 
 // Lista personal de deudas (solo la ve quien la crea). "Me deben" y "Debo"
@@ -18,6 +23,7 @@ export default function ListaDeudas() {
   const [texto, setTexto] = useState("");
   const [importe, setImporte] = useState("");
   const [meDeben, setMeDeben] = useState(true);
+  const [fecha, setFecha] = useState(hoy());
   const [enviando, setEnviando] = useState(false);
 
   const meDebenItems = items.filter((i) => i.meDeben === true);
@@ -32,11 +38,18 @@ export default function ListaDeudas() {
     setTexto("");
     setImporte("");
     try {
-      const nuevo = await crearItem("DEUDA", valorTexto, { importe: valorImporte, meDeben });
+      const nuevo = await crearItem("DEUDA", valorTexto, { importe: valorImporte, meDeben, fecha });
       setItems((prev) => [...prev, nuevo]);
+      setFecha(hoy());
     } finally {
       setEnviando(false);
     }
+  }
+
+  async function cambiarFecha(item: Item, nuevaFecha: string) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, fecha: nuevaFecha } : i)));
+    await actualizarItem(item.id, { fecha: nuevaFecha });
+    reload();
   }
 
   async function togglePagada(item: Item) {
@@ -84,6 +97,13 @@ export default function ListaDeudas() {
           <option value="si">Me deben</option>
           <option value="no">Debo</option>
         </select>
+        <input
+          type="date"
+          value={fecha}
+          onChange={(e) => setFecha(e.target.value)}
+          aria-label="Fecha"
+          className="rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+        />
         <button
           type="submit"
           disabled={!texto.trim() || !importe || enviando}
@@ -100,6 +120,7 @@ export default function ListaDeudas() {
           vacio="Nadie te debe nada por aquí"
           onTogglePagada={togglePagada}
           onRenombrar={renombrar}
+          onCambiarFecha={cambiarFecha}
           onEliminar={eliminar}
         />
         <Columna
@@ -108,6 +129,7 @@ export default function ListaDeudas() {
           vacio="No debes nada por aquí"
           onTogglePagada={togglePagada}
           onRenombrar={renombrar}
+          onCambiarFecha={cambiarFecha}
           onEliminar={eliminar}
         />
       </div>
@@ -121,6 +143,7 @@ function Columna({
   vacio,
   onTogglePagada,
   onRenombrar,
+  onCambiarFecha,
   onEliminar,
 }: {
   titulo: string;
@@ -128,6 +151,7 @@ function Columna({
   vacio: string;
   onTogglePagada: (item: Item) => void;
   onRenombrar: (item: Item, texto: string) => void;
+  onCambiarFecha: (item: Item, fecha: string) => void;
   onEliminar: (id: string) => void;
 }) {
   const totalPendiente = items
@@ -165,6 +189,7 @@ function Columna({
                     </button>
                   )}
                 </NombreEditable>
+                <FechaEditable fecha={item.fecha ?? item.createdAt} onChange={(f) => onCambiarFecha(item, f)} />
                 <button
                   onClick={() => onEliminar(item.id)}
                   aria-label="Eliminar"

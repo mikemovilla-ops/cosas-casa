@@ -10,6 +10,7 @@ export type Item = {
   enlace: string | null;
   importe: number | null;
   meDeben: boolean | null;
+  fecha: string | null;
   createdAt: string;
   updatedAt: string;
   asignadoAId: string | null;
@@ -61,6 +62,7 @@ export async function crearItem(
     cantidad?: number;
     importe?: number;
     meDeben?: boolean;
+    fecha?: string;
   }
 ): Promise<Item> {
   const res = await fetch("/api/items", {
@@ -82,6 +84,7 @@ export async function actualizarItem(
     enlace?: string | null;
     importe?: number;
     meDeben?: boolean;
+    fecha?: string;
   }
 ): Promise<Item> {
   const res = await fetch(`/api/items/${id}`, {
