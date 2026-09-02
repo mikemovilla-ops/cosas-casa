@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   actualizarItem,
+  calcularOrden,
   crearItem,
   eliminarItem,
   fetchItems,
@@ -15,6 +16,7 @@ import AsignadoBadge from "./AsignadoBadge";
 import CantidadStepper from "./CantidadStepper";
 import EnlaceCasa from "./EnlaceCasa";
 import NombreEditable from "./NombreEditable";
+import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
 
 // Tailwind necesita las clases completas y estáticas en el código para
 // detectarlas al compilar — de ahí el mapa en vez de construir el nombre
@@ -97,6 +99,13 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
     await eliminarItem(id);
   }
 
+  async function reordenar(id: string, antes: Item | null, despues: Item | null) {
+    const nuevoOrden = calcularOrden(antes, despues);
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, orden: nuevoOrden } : i)));
+    await actualizarItem(id, { orden: nuevoOrden });
+    reload();
+  }
+
   return (
     <div>
       <form onSubmit={onSubmit} className="flex flex-wrap gap-2 mb-6">
@@ -160,61 +169,68 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
               {items.filter((i) => i.estado === cat.estado).length === 0 ? (
                 <p className="text-ink/40 text-sm italic">Nada por aquí</p>
               ) : (
-                <ul className="card divide-y divide-sand">
-                  {items
-                    .filter((i) => i.estado === cat.estado)
-                    .map((item) => (
-                      <li key={item.id} className="px-3 py-2">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <AsignadoBadge
-                            usuarios={usuarios}
-                            asignadoAId={item.asignadoAId}
-                            onChange={(id) => asignar(item, id)}
-                          />
-                          <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
-                            {(texto) => (
-                              <span className={`flex-1 ${comprado ? "line-through text-emerald-600/70" : ""}`}>
-                                {texto}
-                              </span>
-                            )}
-                          </NombreEditable>
-                          <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
-                          <EnlaceCasa enlace={item.enlace} onChange={(url) => cambiarEnlace(item, url)} />
-                          <button
-                            onClick={() => eliminar(item.id)}
-                            aria-label="Eliminar"
-                            className="text-ink/30 hover:text-clay transition px-1"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-1 mt-1">
-                          {(() => {
-                            const creador = usuarios.find((u) => u.id === item.creadoPorId);
-                            if (!creador) return null;
-                            return (
-                              <span className="text-[10px] text-ink/35 mr-1">
-                                Añadido por {creador.name?.split(" ")[0] ?? creador.email}
-                              </span>
-                            );
-                          })()}
-                          {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
+                <ListaOrdenable
+                  items={items.filter((i) => i.estado === cat.estado)}
+                  onReordenar={reordenar}
+                  className="card divide-y divide-sand"
+                >
+                  {(item) => (
+                    <FilaOrdenable key={item.id} id={item.id} className="px-3 py-2">
+                      {({ asaProps }) => (
+                        <>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <AsaArrastre asaProps={asaProps} />
+                            <AsignadoBadge
+                              usuarios={usuarios}
+                              asignadoAId={item.asignadoAId}
+                              onChange={(id) => asignar(item, id)}
+                            />
+                            <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
+                              {(texto) => (
+                                <span className={`flex-1 ${comprado ? "line-through text-emerald-600/70" : ""}`}>
+                                  {texto}
+                                </span>
+                              )}
+                            </NombreEditable>
+                            <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
+                            <EnlaceCasa enlace={item.enlace} onChange={(url) => cambiarEnlace(item, url)} />
                             <button
-                              key={c.estado}
-                              onClick={() => mover(item, c.estado)}
-                              className={`text-xs rounded px-1.5 py-0.5 border transition ${
-                                c.estado === "COMPRADO"
-                                  ? "border-emerald-600/40 text-emerald-600 hover:bg-emerald-600 hover:text-white"
-                                  : "border-sand text-ink/50 hover:border-sage hover:text-sagedark"
-                              }`}
+                              onClick={() => eliminar(item.id)}
+                              aria-label="Eliminar"
+                              className="text-ink/30 hover:text-clay transition px-1"
                             >
-                              → {c.label}
+                              ✕
                             </button>
-                          ))}
-                        </div>
-                      </li>
-                    ))}
-                </ul>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-1 mt-1">
+                            {(() => {
+                              const creador = usuarios.find((u) => u.id === item.creadoPorId);
+                              if (!creador) return null;
+                              return (
+                                <span className="text-[10px] text-ink/35 mr-1">
+                                  Añadido por {creador.name?.split(" ")[0] ?? creador.email}
+                                </span>
+                              );
+                            })()}
+                            {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
+                              <button
+                                key={c.estado}
+                                onClick={() => mover(item, c.estado)}
+                                className={`text-xs rounded px-1.5 py-0.5 border transition ${
+                                  c.estado === "COMPRADO"
+                                    ? "border-emerald-600/40 text-emerald-600 hover:bg-emerald-600 hover:text-white"
+                                    : "border-sand text-ink/50 hover:border-sage hover:text-sagedark"
+                                }`}
+                              >
+                                → {c.label}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </FilaOrdenable>
+                  )}
+                </ListaOrdenable>
               )}
             </div>
           );

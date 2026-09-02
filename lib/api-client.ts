@@ -11,6 +11,7 @@ export type Item = {
   importe: number | null;
   meDeben: boolean | null;
   fecha: string | null;
+  orden: number;
   createdAt: string;
   updatedAt: string;
   asignadoAId: string | null;
@@ -85,6 +86,7 @@ export async function actualizarItem(
     importe?: number;
     meDeben?: boolean;
     fecha?: string;
+    orden?: number;
   }
 ): Promise<Item> {
   const res = await fetch(`/api/items/${id}`, {
@@ -98,4 +100,14 @@ export async function actualizarItem(
 
 export async function eliminarItem(id: string): Promise<void> {
   await fetch(`/api/items/${id}`, { method: "DELETE" });
+}
+
+// Al soltar un item entre "antes" y "despues" (ya reordenados en el array
+// local), calcula un valor de orden intermedio — así solo hace falta
+// escribir el item que se movió, no reindexar toda la columna.
+export function calcularOrden(antes: Item | null, despues: Item | null): number {
+  if (!antes && !despues) return Date.now();
+  if (!antes) return despues!.orden - 1000;
+  if (!despues) return antes.orden + 1000;
+  return (antes.orden + despues.orden) / 2;
 }

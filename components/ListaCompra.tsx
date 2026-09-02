@@ -1,11 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { actualizarItem, crearItem, eliminarItem, fetchItems, type Item, type Usuario } from "@/lib/api-client";
+import {
+  actualizarItem,
+  calcularOrden,
+  crearItem,
+  eliminarItem,
+  fetchItems,
+  type Item,
+  type Usuario,
+} from "@/lib/api-client";
 import { usePoll } from "@/lib/use-poll";
 import AsignadoBadge from "./AsignadoBadge";
 import CantidadStepper from "./CantidadStepper";
 import NombreEditable from "./NombreEditable";
+import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
 
 export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
   const { items, setItems, reload } = usePoll<Item>(() => fetchItems("COMPRA"));
@@ -62,6 +71,13 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
     await eliminarItem(id);
   }
 
+  async function reordenar(id: string, antes: Item | null, despues: Item | null) {
+    const nuevoOrden = calcularOrden(antes, despues);
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, orden: nuevoOrden } : i)));
+    await actualizarItem(id, { orden: nuevoOrden });
+    reload();
+  }
+
   return (
     <div>
       <form onSubmit={onSubmit} className="flex flex-wrap gap-2 mb-6">
@@ -111,6 +127,7 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
           onCantidad={cambiarCantidad}
           onRenombrar={renombrar}
           onEliminar={eliminar}
+          onReordenar={reordenar}
           tachado={false}
         />
         <Columna
@@ -123,6 +140,7 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
           onCantidad={cambiarCantidad}
           onRenombrar={renombrar}
           onEliminar={eliminar}
+          onReordenar={reordenar}
           tachado
         />
       </div>
@@ -140,6 +158,7 @@ function Columna({
   onCantidad,
   onRenombrar,
   onEliminar,
+  onReordenar,
   tachado,
 }: {
   titulo: string;
@@ -151,6 +170,7 @@ function Columna({
   onCantidad: (item: Item, cantidad: number) => void;
   onRenombrar: (item: Item, texto: string) => void;
   onEliminar: (id: string) => void;
+  onReordenar: (id: string, antes: Item | null, despues: Item | null) => void;
   tachado: boolean;
 }) {
   return (
@@ -161,35 +181,40 @@ function Columna({
       {items.length === 0 ? (
         <p className="text-ink/40 text-sm italic">{vacio}</p>
       ) : (
-        <ul className="card divide-y divide-sand">
-          {items.map((item) => (
-            <li key={item.id} className="flex items-center gap-2 px-3 py-2">
-              <AsignadoBadge
-                usuarios={usuarios}
-                asignadoAId={item.asignadoAId}
-                onChange={(id) => onAsignar(item, id)}
-              />
-              <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
-                {(texto) => (
+        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand">
+          {(item) => (
+            <FilaOrdenable key={item.id} id={item.id} className="flex items-center gap-2 px-3 py-2">
+              {({ asaProps }) => (
+                <>
+                  <AsaArrastre asaProps={asaProps} />
+                  <AsignadoBadge
+                    usuarios={usuarios}
+                    asignadoAId={item.asignadoAId}
+                    onChange={(id) => onAsignar(item, id)}
+                  />
+                  <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
+                    {(texto) => (
+                      <button
+                        onClick={() => onToggle(item)}
+                        className={`flex-1 text-left ${tachado ? "line-through text-ink/40" : "text-ink"}`}
+                      >
+                        {texto}
+                      </button>
+                    )}
+                  </NombreEditable>
+                  <CantidadStepper cantidad={item.cantidad} onChange={(n) => onCantidad(item, n)} />
                   <button
-                    onClick={() => onToggle(item)}
-                    className={`flex-1 text-left ${tachado ? "line-through text-ink/40" : "text-ink"}`}
+                    onClick={() => onEliminar(item.id)}
+                    aria-label="Eliminar"
+                    className="text-ink/30 hover:text-clay transition px-1"
                   >
-                    {texto}
+                    ✕
                   </button>
-                )}
-              </NombreEditable>
-              <CantidadStepper cantidad={item.cantidad} onChange={(n) => onCantidad(item, n)} />
-              <button
-                onClick={() => onEliminar(item.id)}
-                aria-label="Eliminar"
-                className="text-ink/30 hover:text-clay transition px-1"
-              >
-                ✕
-              </button>
-            </li>
-          ))}
-        </ul>
+                </>
+              )}
+            </FilaOrdenable>
+          )}
+        </ListaOrdenable>
       )}
     </div>
   );

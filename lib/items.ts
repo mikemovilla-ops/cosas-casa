@@ -50,3 +50,8 @@ export function fechaValida(valor: unknown): Date | null {
   const d = new Date(valor);
   return Number.isNaN(d.getTime()) ? null : d;
 }
+
+export function ordenValido(valor: unknown): number | null {
+  const n = Number(valor);
+  return Number.isFinite(n) ? n : null;
+}

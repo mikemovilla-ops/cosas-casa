@@ -28,7 +28,10 @@ export async function GET(request: Request) {
     where.creadoPorId = session.user.id;
   }
 
-  const items = await prisma.item.findMany({ where, orderBy: { createdAt: "asc" } });
+  const items = await prisma.item.findMany({
+    where,
+    orderBy: [{ orden: "asc" }, { createdAt: "asc" }],
+  });
   return NextResponse.json(items);
 }
 
@@ -80,6 +83,7 @@ export async function POST(request: Request) {
       importe,
       meDeben,
       fecha,
+      orden: Date.now(),
     },
   });
   return NextResponse.json(item, { status: 201 });
