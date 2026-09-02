@@ -102,12 +102,19 @@ export async function eliminarItem(id: string): Promise<void> {
   await fetch(`/api/items/${id}`, { method: "DELETE" });
 }
 
-// Al soltar un item entre "antes" y "despues" (ya reordenados en el array
-// local), calcula un valor de orden intermedio — así solo hace falta
-// escribir el item que se movió, no reindexar toda la columna.
-export function calcularOrden(antes: Item | null, despues: Item | null): number {
-  if (!antes && !despues) return Date.now();
-  if (!antes) return despues!.orden - 1000;
-  if (!despues) return antes.orden + 1000;
-  return (antes.orden + despues.orden) / 2;
+// Al soltar, se reindexa toda la columna con valores secuenciales (0,1,2...)
+// según el nuevo orden visual, y se guarda cada item que haya cambiado de
+// posición. Reindexar todo en vez de solo el item movido evita que un
+// arrastre no tenga efecto cuando varios items comparten el mismo `orden`
+// de partida (p. ej. todos los que ya existían antes de tener esta función).
+export async function reordenarColumna(
+  itemsReordenados: Item[],
+  actualizarLocal: (id: string, orden: number) => void
+): Promise<void> {
+  const cambios = itemsReordenados
+    .map((item, indice) => ({ item, orden: indice }))
+    .filter(({ item, orden }) => item.orden !== orden);
+
+  cambios.forEach(({ item, orden }) => actualizarLocal(item.id, orden));
+  await Promise.all(cambios.map(({ item, orden }) => actualizarItem(item.id, { orden })));
 }

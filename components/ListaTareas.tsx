@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { actualizarItem, calcularOrden, crearItem, eliminarItem, fetchItems, type Item } from "@/lib/api-client";
+import { actualizarItem, crearItem, eliminarItem, fetchItems, reordenarColumna, type Item } from "@/lib/api-client";
 import { usePoll } from "@/lib/use-poll";
 import NombreEditable from "./NombreEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
@@ -48,10 +48,10 @@ export default function ListaTareas() {
     await eliminarItem(id);
   }
 
-  async function reordenar(id: string, antes: Item | null, despues: Item | null) {
-    const nuevoOrden = calcularOrden(antes, despues);
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, orden: nuevoOrden } : i)));
-    await actualizarItem(id, { orden: nuevoOrden });
+  async function reordenar(itemsReordenados: Item[]) {
+    await reordenarColumna(itemsReordenados, (id, orden) => {
+      setItems((prev) => prev.map((i) => (i.id === id ? { ...i, orden } : i)));
+    });
     reload();
   }
 
@@ -115,7 +115,7 @@ function Columna({
   onToggle: (item: Item) => void;
   onRenombrar: (item: Item, texto: string) => void;
   onEliminar: (id: string) => void;
-  onReordenar: (id: string, antes: Item | null, despues: Item | null) => void;
+  onReordenar: (itemsReordenados: Item[]) => void;
   tachado: boolean;
 }) {
   return (
