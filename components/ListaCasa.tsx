@@ -14,6 +14,7 @@ import { usePoll } from "@/lib/use-poll";
 import AsignadoBadge from "./AsignadoBadge";
 import CantidadStepper from "./CantidadStepper";
 import EnlaceCasa from "./EnlaceCasa";
+import NombreEditable from "./NombreEditable";
 
 // Tailwind necesita las clases completas y estáticas en el código para
 // detectarlas al compilar — de ahí el mapa en vez de construir el nombre
@@ -76,6 +77,12 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
   async function asignar(item: Item, nuevoAsignadoAId: string | null) {
     setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, asignadoAId: nuevoAsignadoAId } : i)));
     await actualizarItem(item.id, { asignadoAId: nuevoAsignadoAId });
+    reload();
+  }
+
+  async function renombrar(item: Item, nuevoTexto: string) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, texto: nuevoTexto } : i)));
+    await actualizarItem(item.id, { texto: nuevoTexto });
     reload();
   }
 
@@ -164,9 +171,13 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                             asignadoAId={item.asignadoAId}
                             onChange={(id) => asignar(item, id)}
                           />
-                          <span className={`flex-1 ${comprado ? "line-through text-emerald-600/70" : ""}`}>
-                            {item.texto}
-                          </span>
+                          <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
+                            {(texto) => (
+                              <span className={`flex-1 ${comprado ? "line-through text-emerald-600/70" : ""}`}>
+                                {texto}
+                              </span>
+                            )}
+                          </NombreEditable>
                           <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
                           <EnlaceCasa enlace={item.enlace} onChange={(url) => cambiarEnlace(item, url)} />
                           <button

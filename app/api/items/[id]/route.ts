@@ -15,6 +15,12 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
   const data: Prisma.ItemUncheckedUpdateInput = {};
 
+  if ("texto" in body) {
+    const texto = typeof body.texto === "string" ? body.texto.trim() : "";
+    if (!texto) return NextResponse.json({ error: "texto inválido" }, { status: 400 });
+    data.texto = texto;
+  }
+
   if ("estado" in body) {
     if (typeof body.estado !== "string" || !estadoValidoParaTipo(existente.tipo, body.estado)) {
       return NextResponse.json({ error: "estado inválido" }, { status: 400 });
