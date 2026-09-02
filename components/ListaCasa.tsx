@@ -14,6 +14,7 @@ import { usePoll } from "@/lib/use-poll";
 import AsignadoBadge from "./AsignadoBadge";
 import CantidadStepper from "./CantidadStepper";
 import EnlaceCasa from "./EnlaceCasa";
+import NombreEditable from "./NombreEditable";
 
 // Tailwind necesita las clases completas y estáticas en el código para
 // detectarlas al compilar — de ahí el mapa en vez de construir el nombre
@@ -30,7 +31,7 @@ const CATEGORIAS: { estado: EstadoItem; label: string; textClass: string }[] = [
 // directamente a comprado (y deshacerlo si hace falta).
 const COLUMNAS = [
   ...CATEGORIAS,
-  { estado: "COMPRADO" as EstadoItem, label: "Comprado ✓", textClass: "text-emerald-600" },
+  { estado: "COMPRADO" as EstadoItem, label: "Comprado/Hecho ✓", textClass: "text-emerald-600" },
 ];
 
 export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
@@ -76,6 +77,12 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
   async function asignar(item: Item, nuevoAsignadoAId: string | null) {
     setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, asignadoAId: nuevoAsignadoAId } : i)));
     await actualizarItem(item.id, { asignadoAId: nuevoAsignadoAId });
+    reload();
+  }
+
+  async function renombrar(item: Item, nuevoTexto: string) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, texto: nuevoTexto } : i)));
+    await actualizarItem(item.id, { texto: nuevoTexto });
     reload();
   }
 
@@ -164,9 +171,13 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                             asignadoAId={item.asignadoAId}
                             onChange={(id) => asignar(item, id)}
                           />
-                          <span className={`flex-1 ${comprado ? "line-through text-emerald-600/70" : ""}`}>
-                            {item.texto}
-                          </span>
+                          <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
+                            {(texto) => (
+                              <span className={`flex-1 ${comprado ? "line-through text-emerald-600/70" : ""}`}>
+                                {texto}
+                              </span>
+                            )}
+                          </NombreEditable>
                           <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
                           <EnlaceCasa enlace={item.enlace} onChange={(url) => cambiarEnlace(item, url)} />
                           <button
@@ -177,7 +188,16 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                             ✕
                           </button>
                         </div>
-                        <div className="flex flex-wrap gap-1 mt-1">
+                        <div className="flex flex-wrap items-center gap-1 mt-1">
+                          {(() => {
+                            const creador = usuarios.find((u) => u.id === item.creadoPorId);
+                            if (!creador) return null;
+                            return (
+                              <span className="text-[10px] text-ink/35 mr-1">
+                                Añadido por {creador.name?.split(" ")[0] ?? creador.email}
+                              </span>
+                            );
+                          })()}
                           {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
                             <button
                               key={c.estado}

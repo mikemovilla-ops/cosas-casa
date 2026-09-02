@@ -5,6 +5,7 @@ import { actualizarItem, crearItem, eliminarItem, fetchItems, type Item, type Us
 import { usePoll } from "@/lib/use-poll";
 import AsignadoBadge from "./AsignadoBadge";
 import CantidadStepper from "./CantidadStepper";
+import NombreEditable from "./NombreEditable";
 
 export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
   const { items, setItems, reload } = usePoll<Item>(() => fetchItems("COMPRA"));
@@ -29,6 +30,12 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
     } finally {
       setEnviando(false);
     }
+  }
+
+  async function renombrar(item: Item, nuevoTexto: string) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, texto: nuevoTexto } : i)));
+    await actualizarItem(item.id, { texto: nuevoTexto });
+    reload();
   }
 
   async function cambiarCantidad(item: Item, nuevaCantidad: number) {
@@ -102,6 +109,7 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
           onToggle={toggle}
           onAsignar={asignar}
           onCantidad={cambiarCantidad}
+          onRenombrar={renombrar}
           onEliminar={eliminar}
           tachado={false}
         />
@@ -113,6 +121,7 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
           onToggle={toggle}
           onAsignar={asignar}
           onCantidad={cambiarCantidad}
+          onRenombrar={renombrar}
           onEliminar={eliminar}
           tachado
         />
@@ -129,6 +138,7 @@ function Columna({
   onToggle,
   onAsignar,
   onCantidad,
+  onRenombrar,
   onEliminar,
   tachado,
 }: {
@@ -139,6 +149,7 @@ function Columna({
   onToggle: (item: Item) => void;
   onAsignar: (item: Item, asignadoAId: string | null) => void;
   onCantidad: (item: Item, cantidad: number) => void;
+  onRenombrar: (item: Item, texto: string) => void;
   onEliminar: (id: string) => void;
   tachado: boolean;
 }) {
@@ -158,12 +169,16 @@ function Columna({
                 asignadoAId={item.asignadoAId}
                 onChange={(id) => onAsignar(item, id)}
               />
-              <button
-                onClick={() => onToggle(item)}
-                className={`flex-1 text-left ${tachado ? "line-through text-ink/40" : "text-ink"}`}
-              >
-                {item.texto}
-              </button>
+              <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
+                {(texto) => (
+                  <button
+                    onClick={() => onToggle(item)}
+                    className={`flex-1 text-left ${tachado ? "line-through text-ink/40" : "text-ink"}`}
+                  >
+                    {texto}
+                  </button>
+                )}
+              </NombreEditable>
               <CantidadStepper cantidad={item.cantidad} onChange={(n) => onCantidad(item, n)} />
               <button
                 onClick={() => onEliminar(item.id)}

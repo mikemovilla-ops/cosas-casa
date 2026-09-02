@@ -11,6 +11,7 @@ export type Item = {
   createdAt: string;
   updatedAt: string;
   asignadoAId: string | null;
+  creadoPorId: string | null;
 };
 
 export type Usuario = {
@@ -47,7 +48,13 @@ export async function crearItem(
 
 export async function actualizarItem(
   id: string,
-  cambios: { estado?: EstadoItem; asignadoAId?: string | null; cantidad?: number; enlace?: string | null }
+  cambios: {
+    texto?: string;
+    estado?: EstadoItem;
+    asignadoAId?: string | null;
+    cantidad?: number;
+    enlace?: string | null;
+  }
 ): Promise<Item> {
   const res = await fetch(`/api/items/${id}`, {
     method: "PATCH",
