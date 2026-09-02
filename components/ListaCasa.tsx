@@ -30,7 +30,7 @@ const CATEGORIAS: { estado: EstadoItem; label: string; textClass: string }[] = [
 // directamente a comprado (y deshacerlo si hace falta).
 const COLUMNAS = [
   ...CATEGORIAS,
-  { estado: "COMPRADO" as EstadoItem, label: "Comprado ✓", textClass: "text-emerald-600" },
+  { estado: "COMPRADO" as EstadoItem, label: "Comprado/Hecho ✓", textClass: "text-emerald-600" },
 ];
 
 export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
@@ -177,7 +177,16 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                             ✕
                           </button>
                         </div>
-                        <div className="flex flex-wrap gap-1 mt-1">
+                        <div className="flex flex-wrap items-center gap-1 mt-1">
+                          {(() => {
+                            const creador = usuarios.find((u) => u.id === item.creadoPorId);
+                            if (!creador) return null;
+                            return (
+                              <span className="text-[10px] text-ink/35 mr-1">
+                                Añadido por {creador.name?.split(" ")[0] ?? creador.email}
+                              </span>
+                            );
+                          })()}
                           {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
                             <button
                               key={c.estado}

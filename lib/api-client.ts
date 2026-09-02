@@ -11,6 +11,7 @@ export type Item = {
   createdAt: string;
   updatedAt: string;
   asignadoAId: string | null;
+  creadoPorId: string | null;
 };
 
 export type Usuario = {
