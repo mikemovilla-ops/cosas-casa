@@ -19,6 +19,11 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
 
+  // Controla si le aparecen las pestañas personales de Tareas y Deudas —
+  // no afecta a qué datos ve (esos siempre están filtrados por quién los
+  // creó), solo a si la pestaña se muestra.
+  tareasDeudasActivado Boolean @default(false)
+
   accounts       Account[]
   sessions       Session[]
   itemsCreados   Item[] @relation("CreadoPor")
@@ -66,23 +71,30 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// Tipo de lista al que pertenece el item.
+// Tipo de lista al que pertenece el item. COMPRA y CASA son compartidas
+// entre los dos usuarios; TAREA y DEUDA son personales (solo las ve quien
+// las creó, ver app/api/items).
 enum TipoLista {
   COMPRA
   CASA
+  TAREA
+  DEUDA
 }
 
 // Estado del item dentro de su lista. Para COMPRA solo se usan
-// A_COMPRAR/COMPRADO; para CASA solo URGENTE/MEDIO/LARGO. No se modela como
-// dos enums separados porque un único campo `estado` simplifica el toggle
-// genérico en la API; la validación de qué valores son válidos según el
-// `tipo` vive en app/api/items.
+// A_COMPRAR/COMPRADO; para CASA URGENTE/MEDIO/LARGO/COMPRADO; para TAREA y
+// DEUDA, PENDIENTE/HECHO ("hecho" = tarea completada o deuda saldada). No se
+// modela como enums separados porque un único campo `estado` simplifica el
+// toggle genérico en la API; la validación de qué valores son válidos según
+// el `tipo` vive en lib/items.ts.
 enum EstadoItem {
   A_COMPRAR
   COMPRADO
   URGENTE
   MEDIO
   LARGO
+  PENDIENTE
+  HECHO
 }
 
 model Item {
@@ -93,6 +105,9 @@ model Item {
   cantidad  Int        @default(1)
   // Enlace a la tienda donde se compra, solo se usa en items de CASA.
   enlace    String?
+  // Solo para DEUDA: importe en euros y de qué dirección es la deuda.
+  importe   Float?
+  meDeben   Boolean?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
@@ -100,7 +115,8 @@ model Item {
   creadoPor   User?   @relation("CreadoPor", fields: [creadoPorId], references: [id], onDelete: SetNull)
 
   // A quién corresponde el item ("Los dos" = null). Independiente de quién
-  // lo creó: uno puede añadir algo y asignárselo al otro.
+  // lo creó: uno puede añadir algo y asignárselo al otro. No se usa en
+  // TAREA/DEUDA (son personales, no compartidas).
   asignadoAId String?
   asignadoA   User?   @relation("AsignadoA", fields: [asignadoAId], references: [id], onDelete: SetNull)
 

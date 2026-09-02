@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import type { TipoLista } from "@prisma/client";
+import type { Prisma, TipoLista } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { ESTADO_INICIAL, estadoValidoParaTipo, normalizarCantidad } from "@/lib/items";
+import { ESTADO_INICIAL, estadoValidoParaTipo, importeValido, normalizarCantidad, TIPOS_PERSONALES } from "@/lib/items";
 
-const TIPOS: TipoLista[] = ["COMPRA", "CASA"];
+const TIPOS: TipoLista[] = ["COMPRA", "CASA", "TAREA", "DEUDA"];
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
@@ -16,10 +16,12 @@ export async function GET(request: Request) {
   const tipo = TIPOS.find((t) => t === tipoParam);
   if (!tipo) return NextResponse.json({ error: "tipo inválido" }, { status: 400 });
 
-  const items = await prisma.item.findMany({
-    where: { tipo },
-    orderBy: { createdAt: "asc" },
-  });
+  const where: Prisma.ItemWhereInput = { tipo };
+  if (TIPOS_PERSONALES.includes(tipo)) {
+    where.creadoPorId = session.user.id;
+  }
+
+  const items = await prisma.item.findMany({ where, orderBy: { createdAt: "asc" } });
   return NextResponse.json(items);
 }
 
@@ -39,8 +41,10 @@ export async function POST(request: Request) {
       ? body.estado
       : ESTADO_INICIAL[tipo];
 
+  const esPersonal = TIPOS_PERSONALES.includes(tipo);
+
   let asignadoAId: string | null = null;
-  if (typeof body.asignadoAId === "string" && body.asignadoAId) {
+  if (!esPersonal && typeof body.asignadoAId === "string" && body.asignadoAId) {
     const asignado = await prisma.user.findUnique({ where: { id: body.asignadoAId } });
     if (!asignado) return NextResponse.json({ error: "asignadoAId inválido" }, { status: 400 });
     asignadoAId = asignado.id;
@@ -48,8 +52,25 @@ export async function POST(request: Request) {
 
   const cantidad = normalizarCantidad(body.cantidad);
 
+  let importe: number | null = null;
+  let meDeben: boolean | null = null;
+  if (tipo === "DEUDA") {
+    importe = importeValido(body.importe);
+    if (importe === null) return NextResponse.json({ error: "importe inválido" }, { status: 400 });
+    meDeben = body.meDeben === true;
+  }
+
   const item = await prisma.item.create({
-    data: { tipo, texto, estado, cantidad, creadoPorId: session.user.id, asignadoAId },
+    data: {
+      tipo,
+      texto,
+      estado,
+      cantidad,
+      creadoPorId: session.user.id,
+      asignadoAId,
+      importe,
+      meDeben,
+    },
   });
   return NextResponse.json(item, { status: 201 });
 }

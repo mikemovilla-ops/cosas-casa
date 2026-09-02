@@ -1,5 +1,5 @@
-export type TipoLista = "COMPRA" | "CASA";
-export type EstadoItem = "A_COMPRAR" | "COMPRADO" | "URGENTE" | "MEDIO" | "LARGO";
+export type TipoLista = "COMPRA" | "CASA" | "TAREA" | "DEUDA";
+export type EstadoItem = "A_COMPRAR" | "COMPRADO" | "URGENTE" | "MEDIO" | "LARGO" | "PENDIENTE" | "HECHO";
 
 export type Item = {
   id: string;
@@ -8,6 +8,8 @@ export type Item = {
   texto: string;
   cantidad: number;
   enlace: string | null;
+  importe: number | null;
+  meDeben: boolean | null;
   createdAt: string;
   updatedAt: string;
   asignadoAId: string | null;
@@ -32,10 +34,34 @@ export async function fetchUsuarios(): Promise<Usuario[]> {
   return res.json();
 }
 
+export async function fetchPerfil(): Promise<{ tareasDeudasActivado: boolean }> {
+  const res = await fetch("/api/perfil");
+  if (!res.ok) throw new Error("Error al cargar el perfil");
+  return res.json();
+}
+
+export async function actualizarPerfil(cambios: {
+  tareasDeudasActivado: boolean;
+}): Promise<{ tareasDeudasActivado: boolean }> {
+  const res = await fetch("/api/perfil", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cambios),
+  });
+  if (!res.ok) throw new Error("Error al actualizar el perfil");
+  return res.json();
+}
+
 export async function crearItem(
   tipo: TipoLista,
   texto: string,
-  opciones?: { estado?: EstadoItem; asignadoAId?: string | null; cantidad?: number }
+  opciones?: {
+    estado?: EstadoItem;
+    asignadoAId?: string | null;
+    cantidad?: number;
+    importe?: number;
+    meDeben?: boolean;
+  }
 ): Promise<Item> {
   const res = await fetch("/api/items", {
     method: "POST",
@@ -54,6 +80,8 @@ export async function actualizarItem(
     asignadoAId?: string | null;
     cantidad?: number;
     enlace?: string | null;
+    importe?: number;
+    meDeben?: boolean;
   }
 ): Promise<Item> {
   const res = await fetch(`/api/items/${id}`, {
