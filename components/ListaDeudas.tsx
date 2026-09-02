@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { actualizarItem, crearItem, eliminarItem, fetchItems, type Item } from "@/lib/api-client";
+import { actualizarItem, calcularOrden, crearItem, eliminarItem, fetchItems, type Item } from "@/lib/api-client";
 import { usePoll } from "@/lib/use-poll";
 import NombreEditable from "./NombreEditable";
 import FechaEditable from "./FechaEditable";
+import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
 
 function euros(n: number) {
   return n.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
@@ -70,6 +71,13 @@ export default function ListaDeudas() {
     await eliminarItem(id);
   }
 
+  async function reordenar(id: string, antes: Item | null, despues: Item | null) {
+    const nuevoOrden = calcularOrden(antes, despues);
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, orden: nuevoOrden } : i)));
+    await actualizarItem(id, { orden: nuevoOrden });
+    reload();
+  }
+
   return (
     <div>
       <form onSubmit={onSubmit} className="flex flex-wrap gap-2 mb-6">
@@ -122,6 +130,7 @@ export default function ListaDeudas() {
           onRenombrar={renombrar}
           onCambiarFecha={cambiarFecha}
           onEliminar={eliminar}
+          onReordenar={reordenar}
         />
         <Columna
           titulo="Debo"
@@ -131,6 +140,7 @@ export default function ListaDeudas() {
           onRenombrar={renombrar}
           onCambiarFecha={cambiarFecha}
           onEliminar={eliminar}
+          onReordenar={reordenar}
         />
       </div>
     </div>
@@ -145,6 +155,7 @@ function Columna({
   onRenombrar,
   onCambiarFecha,
   onEliminar,
+  onReordenar,
 }: {
   titulo: string;
   items: Item[];
@@ -153,6 +164,7 @@ function Columna({
   onRenombrar: (item: Item, texto: string) => void;
   onCambiarFecha: (item: Item, fecha: string) => void;
   onEliminar: (id: string) => void;
+  onReordenar: (id: string, antes: Item | null, despues: Item | null) => void;
 }) {
   const totalPendiente = items
     .filter((i) => i.estado === "PENDIENTE")
@@ -171,36 +183,41 @@ function Columna({
       {items.length === 0 ? (
         <p className="text-ink/40 text-sm italic">{vacio}</p>
       ) : (
-        <ul className="card divide-y divide-sand">
-          {items.map((item) => {
+        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand">
+          {(item) => {
             const pagada = item.estado === "HECHO";
             return (
-              <li key={item.id} className="flex items-center gap-2 px-3 py-2">
-                <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
-                  {(texto) => (
+              <FilaOrdenable key={item.id} id={item.id} className="flex items-center gap-2 px-3 py-2">
+                {({ asaProps }) => (
+                  <>
+                    <AsaArrastre asaProps={asaProps} />
+                    <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
+                      {(texto) => (
+                        <button
+                          onClick={() => onTogglePagada(item)}
+                          className={`flex-1 text-left ${pagada ? "line-through text-emerald-600/70" : "text-ink"}`}
+                        >
+                          {texto}
+                          <span className={`ml-1.5 text-sm ${pagada ? "" : "font-semibold text-clay"}`}>
+                            {euros(item.importe ?? 0)}
+                          </span>
+                        </button>
+                      )}
+                    </NombreEditable>
+                    <FechaEditable fecha={item.fecha ?? item.createdAt} onChange={(f) => onCambiarFecha(item, f)} />
                     <button
-                      onClick={() => onTogglePagada(item)}
-                      className={`flex-1 text-left ${pagada ? "line-through text-emerald-600/70" : "text-ink"}`}
+                      onClick={() => onEliminar(item.id)}
+                      aria-label="Eliminar"
+                      className="text-ink/30 hover:text-clay transition px-1"
                     >
-                      {texto}
-                      <span className={`ml-1.5 text-sm ${pagada ? "" : "font-semibold text-clay"}`}>
-                        {euros(item.importe ?? 0)}
-                      </span>
+                      ✕
                     </button>
-                  )}
-                </NombreEditable>
-                <FechaEditable fecha={item.fecha ?? item.createdAt} onChange={(f) => onCambiarFecha(item, f)} />
-                <button
-                  onClick={() => onEliminar(item.id)}
-                  aria-label="Eliminar"
-                  className="text-ink/30 hover:text-clay transition px-1"
-                >
-                  ✕
-                </button>
-              </li>
+                  </>
+                )}
+              </FilaOrdenable>
             );
-          })}
-        </ul>
+          }}
+        </ListaOrdenable>
       )}
     </div>
   );

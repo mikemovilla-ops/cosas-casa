@@ -9,6 +9,7 @@ import {
   fechaValida,
   importeValido,
   normalizarCantidad,
+  ordenValido,
   TIPOS_PERSONALES,
 } from "@/lib/items";
 
@@ -81,6 +82,12 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const fecha = fechaValida(body.fecha);
     if (!fecha) return NextResponse.json({ error: "fecha inválida" }, { status: 400 });
     data.fecha = fecha;
+  }
+
+  if ("orden" in body) {
+    const orden = ordenValido(body.orden);
+    if (orden === null) return NextResponse.json({ error: "orden inválido" }, { status: 400 });
+    data.orden = orden;
   }
 
   if (Object.keys(data).length === 0) {

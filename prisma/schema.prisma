@@ -111,6 +111,11 @@ model Item {
   importe   Float?
   meDeben   Boolean?
   fecha     DateTime?
+  // Orden manual (arrastrar y soltar). Los items nuevos arrancan en
+  // Date.now() (siempre mayor que 0), así que los ya existentes —que se
+  // quedan en el valor por defecto 0— ordenan primero por createdAt sin
+  // necesidad de rellenar nada a mano al añadir esta columna.
+  orden     Float      @default(0)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
