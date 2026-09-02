@@ -3,7 +3,14 @@ import { getServerSession } from "next-auth";
 import type { Prisma } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { enlaceValido, estadoValidoParaTipo, normalizarCantidad } from "@/lib/items";
+import {
+  enlaceValido,
+  estadoValidoParaTipo,
+  fechaValida,
+  importeValido,
+  normalizarCantidad,
+  TIPOS_PERSONALES,
+} from "@/lib/items";
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
@@ -12,6 +19,12 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   const body = await request.json();
   const existente = await prisma.item.findUnique({ where: { id: params.id } });
   if (!existente) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+
+  // TAREA/DEUDA son personales: nadie más que quien las creó puede tocarlas,
+  // aunque conozca el id.
+  if (TIPOS_PERSONALES.includes(existente.tipo) && existente.creadoPorId !== session.user.id) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+  }
 
   const data: Prisma.ItemUncheckedUpdateInput = {};
 
@@ -54,6 +67,22 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
   }
 
+  if ("importe" in body) {
+    const importe = importeValido(body.importe);
+    if (importe === null) return NextResponse.json({ error: "importe inválido" }, { status: 400 });
+    data.importe = importe;
+  }
+
+  if ("meDeben" in body) {
+    data.meDeben = body.meDeben === true;
+  }
+
+  if ("fecha" in body) {
+    const fecha = fechaValida(body.fecha);
+    if (!fecha) return NextResponse.json({ error: "fecha inválida" }, { status: 400 });
+    data.fecha = fecha;
+  }
+
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ error: "Nada que actualizar" }, { status: 400 });
   }
@@ -65,6 +94,13 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+  const existente = await prisma.item.findUnique({ where: { id: params.id } });
+  if (!existente) return NextResponse.json({ ok: true });
+
+  if (TIPOS_PERSONALES.includes(existente.tipo) && existente.creadoPorId !== session.user.id) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+  }
 
   await prisma.item.delete({ where: { id: params.id } }).catch(() => null);
   return NextResponse.json({ ok: true });
