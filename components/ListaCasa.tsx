@@ -3,10 +3,10 @@
 import { useState } from "react";
 import {
   actualizarItem,
-  calcularOrden,
   crearItem,
   eliminarItem,
   fetchItems,
+  reordenarColumna,
   type EstadoItem,
   type Item,
   type Usuario,
@@ -99,10 +99,10 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
     await eliminarItem(id);
   }
 
-  async function reordenar(id: string, antes: Item | null, despues: Item | null) {
-    const nuevoOrden = calcularOrden(antes, despues);
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, orden: nuevoOrden } : i)));
-    await actualizarItem(id, { orden: nuevoOrden });
+  async function reordenar(itemsReordenados: Item[]) {
+    await reordenarColumna(itemsReordenados, (id, orden) => {
+      setItems((prev) => prev.map((i) => (i.id === id ? { ...i, orden } : i)));
+    });
     reload();
   }
 

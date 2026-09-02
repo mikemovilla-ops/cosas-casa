@@ -13,10 +13,14 @@ import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } 
 import { CSS } from "@dnd-kit/utilities";
 
 // Lista arrastrable genérica: cada columna de cada lista (Compra, Casa,
-// Tareas, Deudas) la envuelve con esto. `items` debe venir ya ordenado
-// (por `orden`) — al soltar, se calcula dónde cae y se avisa vía
-// onReordenar con los vecinos nuevos para que el que llama calcule el
-// nuevo valor de `orden` (ver calcularOrden en lib/api-client).
+// Tareas, Deudas) la envuelve con esto. `items` debe venir ya ordenado (por
+// `orden`) — al soltar, se avisa vía onReordenar con la columna entera ya
+// reordenada, y quien llama reasigna un `orden` secuencial (0,1,2...) a
+// todos sus items. No se calcula solo un valor intermedio entre los dos
+// vecinos porque, si varios items comparten el mismo `orden` de partida
+// (p. ej. todos los que ya existían antes de añadir esta función, con el
+// valor por defecto 0), la media entre dos iguales sigue dando el mismo
+// valor y el arrastre no tendría ningún efecto real.
 export default function ListaOrdenable<T extends { id: string }>({
   items,
   onReordenar,
@@ -24,7 +28,7 @@ export default function ListaOrdenable<T extends { id: string }>({
   children,
 }: {
   items: T[];
-  onReordenar: (id: string, antes: T | null, despues: T | null) => void;
+  onReordenar: (itemsReordenados: T[]) => void;
   className?: string;
   children: (item: T) => React.ReactNode;
 }) {
@@ -39,9 +43,7 @@ export default function ListaOrdenable<T extends { id: string }>({
     const oldIndex = items.findIndex((i) => i.id === active.id);
     const newIndex = items.findIndex((i) => i.id === over.id);
     if (oldIndex === -1 || newIndex === -1) return;
-    const reordenados = arrayMove(items, oldIndex, newIndex);
-    const idx = reordenados.findIndex((i) => i.id === active.id);
-    onReordenar(active.id as string, reordenados[idx - 1] ?? null, reordenados[idx + 1] ?? null);
+    onReordenar(arrayMove(items, oldIndex, newIndex));
   }
 
   return (
