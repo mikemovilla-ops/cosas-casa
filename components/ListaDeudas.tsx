@@ -27,8 +27,8 @@ export default function ListaDeudas() {
   const [fecha, setFecha] = useState(hoy());
   const [enviando, setEnviando] = useState(false);
 
-  const meDebenItems = items.filter((i) => i.meDeben === true);
-  const deboItems = items.filter((i) => i.meDeben === false);
+  const meDebenItems = items.filter((i) => i.meDeben === true).sort((a, b) => a.orden - b.orden);
+  const deboItems = items.filter((i) => i.meDeben === false).sort((a, b) => a.orden - b.orden);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();

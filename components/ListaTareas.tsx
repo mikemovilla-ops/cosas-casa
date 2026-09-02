@@ -13,8 +13,8 @@ export default function ListaTareas() {
   const [texto, setTexto] = useState("");
   const [enviando, setEnviando] = useState(false);
 
-  const pendientes = items.filter((i) => i.estado === "PENDIENTE");
-  const hechas = items.filter((i) => i.estado === "HECHO");
+  const pendientes = items.filter((i) => i.estado === "PENDIENTE").sort((a, b) => a.orden - b.orden);
+  const hechas = items.filter((i) => i.estado === "HECHO").sort((a, b) => a.orden - b.orden);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
