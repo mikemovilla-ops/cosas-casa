@@ -47,7 +47,8 @@ export default function ListaDeudas() {
     }
   }
 
-  async function cambiarFecha(item: Item, nuevaFecha: string) {
+  async function cambiarFecha(item: Item, nuevaFecha: string | null) {
+    if (!nuevaFecha) return;
     setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, fecha: nuevaFecha } : i)));
     await actualizarItem(item.id, { fecha: nuevaFecha });
     reload();
@@ -162,7 +163,7 @@ function Columna({
   vacio: string;
   onTogglePagada: (item: Item) => void;
   onRenombrar: (item: Item, texto: string) => void;
-  onCambiarFecha: (item: Item, fecha: string) => void;
+  onCambiarFecha: (item: Item, fecha: string | null) => void;
   onEliminar: (id: string) => void;
   onReordenar: (itemsReordenados: Item[]) => void;
 }) {
@@ -204,7 +205,11 @@ function Columna({
                         </button>
                       )}
                     </NombreEditable>
-                    <FechaEditable fecha={item.fecha ?? item.createdAt} onChange={(f) => onCambiarFecha(item, f)} />
+                    <FechaEditable
+                      fecha={item.fecha ?? item.createdAt}
+                      onChange={(f) => onCambiarFecha(item, f)}
+                      permitirBorrar={false}
+                    />
                     <button
                       onClick={() => onEliminar(item.id)}
                       aria-label="Eliminar"

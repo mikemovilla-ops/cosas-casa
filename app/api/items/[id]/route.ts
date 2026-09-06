@@ -79,9 +79,13 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   }
 
   if ("fecha" in body) {
-    const fecha = fechaValida(body.fecha);
-    if (!fecha) return NextResponse.json({ error: "fecha inválida" }, { status: 400 });
-    data.fecha = fecha;
+    if (body.fecha === null) {
+      data.fecha = null;
+    } else {
+      const fecha = fechaValida(body.fecha);
+      if (!fecha) return NextResponse.json({ error: "fecha inválida" }, { status: 400 });
+      data.fecha = fecha;
+    }
   }
 
   if ("orden" in body) {
