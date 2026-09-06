@@ -85,7 +85,7 @@ export async function actualizarItem(
     enlace?: string | null;
     importe?: number;
     meDeben?: boolean;
-    fecha?: string;
+    fecha?: string | null;
     orden?: number;
   }
 ): Promise<Item> {

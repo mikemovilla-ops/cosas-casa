@@ -10,28 +10,32 @@ function formatoCorto(fechaISO: string) {
 export default function FechaEditable({
   fecha,
   onChange,
+  etiquetaVacio = "+ fecha",
+  permitirBorrar = true,
 }: {
-  fecha: string;
-  onChange: (fecha: string) => void;
+  fecha: string | null;
+  onChange: (fecha: string | null) => void;
+  etiquetaVacio?: string;
+  permitirBorrar?: boolean;
 }) {
   const [editando, setEditando] = useState(false);
-  const [valor, setValor] = useState(fecha.slice(0, 10));
+  const [valor, setValor] = useState(fecha?.slice(0, 10) ?? "");
 
   function abrir(e: React.MouseEvent) {
     e.stopPropagation();
-    setValor(fecha.slice(0, 10));
+    setValor(fecha?.slice(0, 10) ?? "");
     setEditando(true);
   }
 
   function guardar(e: React.FormEvent) {
     e.preventDefault();
-    if (valor) onChange(valor);
+    onChange(valor || null);
     setEditando(false);
   }
 
   if (editando) {
     return (
-      <form onSubmit={guardar} className="shrink-0" onClick={(e) => e.stopPropagation()}>
+      <form onSubmit={guardar} className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
         <input
           type="date"
           autoFocus
@@ -40,6 +44,19 @@ export default function FechaEditable({
           onBlur={guardar}
           className="text-xs rounded border border-sand px-1 py-0.5 bg-white focus:border-sage outline-none"
         />
+        {fecha && permitirBorrar && (
+          <button
+            type="button"
+            onClick={() => {
+              onChange(null);
+              setEditando(false);
+            }}
+            aria-label="Quitar fecha"
+            className="text-ink/30 hover:text-clay px-0.5"
+          >
+            ✕
+          </button>
+        )}
       </form>
     );
   }
@@ -49,10 +66,10 @@ export default function FechaEditable({
       type="button"
       onClick={abrir}
       title="Editar fecha"
-      aria-label="Editar fecha de la deuda"
-      className="shrink-0 text-[11px] text-ink/35 hover:text-sage px-0.5"
+      aria-label="Editar fecha"
+      className={`shrink-0 text-[11px] px-0.5 ${fecha ? "text-ink/35 hover:text-sage" : "text-ink/25 hover:text-sage"}`}
     >
-      {formatoCorto(fecha)}
+      {fecha ? formatoCorto(fecha) : etiquetaVacio}
     </button>
   );
 }

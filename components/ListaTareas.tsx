@@ -4,6 +4,7 @@ import { useState } from "react";
 import { actualizarItem, crearItem, eliminarItem, fetchItems, reordenarColumna, type Item } from "@/lib/api-client";
 import { usePoll } from "@/lib/use-poll";
 import NombreEditable from "./NombreEditable";
+import FechaEditable from "./FechaEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
 
 // Lista personal (solo la ve quien la crea) — sin asignar a nadie, sin
@@ -48,6 +49,12 @@ export default function ListaTareas() {
     await eliminarItem(id);
   }
 
+  async function cambiarFecha(item: Item, nuevaFecha: string | null) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, fecha: nuevaFecha } : i)));
+    await actualizarItem(item.id, { fecha: nuevaFecha });
+    reload();
+  }
+
   async function reordenar(itemsReordenados: Item[]) {
     await reordenarColumna(itemsReordenados, (id, orden) => {
       setItems((prev) => prev.map((i) => (i.id === id ? { ...i, orden } : i)));
@@ -80,6 +87,7 @@ export default function ListaTareas() {
           vacio="No hay nada pendiente 🎉"
           onToggle={toggle}
           onRenombrar={renombrar}
+          onCambiarFecha={cambiarFecha}
           onEliminar={eliminar}
           onReordenar={reordenar}
           tachado={false}
@@ -90,6 +98,7 @@ export default function ListaTareas() {
           vacio="Nada hecho todavía"
           onToggle={toggle}
           onRenombrar={renombrar}
+          onCambiarFecha={cambiarFecha}
           onEliminar={eliminar}
           onReordenar={reordenar}
           tachado
@@ -105,6 +114,7 @@ function Columna({
   vacio,
   onToggle,
   onRenombrar,
+  onCambiarFecha,
   onEliminar,
   onReordenar,
   tachado,
@@ -114,6 +124,7 @@ function Columna({
   vacio: string;
   onToggle: (item: Item) => void;
   onRenombrar: (item: Item, texto: string) => void;
+  onCambiarFecha: (item: Item, fecha: string | null) => void;
   onEliminar: (id: string) => void;
   onReordenar: (itemsReordenados: Item[]) => void;
   tachado: boolean;
@@ -142,6 +153,11 @@ function Columna({
                       </button>
                     )}
                   </NombreEditable>
+                  <FechaEditable
+                    fecha={item.fecha}
+                    onChange={(f) => onCambiarFecha(item, f)}
+                    etiquetaVacio="+ fecha"
+                  />
                   <button
                     onClick={() => onEliminar(item.id)}
                     aria-label="Eliminar"
