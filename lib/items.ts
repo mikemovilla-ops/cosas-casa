@@ -63,3 +63,10 @@ export function ordenValido(valor: unknown): number | null {
   const n = Number(valor);
   return Number.isFinite(n) ? n : null;
 }
+
+// Entero entre 1 y 10 (para limpiar la nota se envía null directamente,
+// gestionado aparte en la ruta — igual que enlace o fecha).
+export function notaValida(valor: unknown): number | null {
+  const n = Number(valor);
+  return Number.isInteger(n) && n >= 1 && n <= 10 ? n : null;
+}

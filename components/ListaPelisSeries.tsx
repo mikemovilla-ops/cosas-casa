@@ -16,6 +16,7 @@ import { usePoll } from "@/lib/use-poll";
 import AsignadoBadge from "./AsignadoBadge";
 import TipoContenidoBadge from "./TipoContenidoBadge";
 import PlataformaEditable from "./PlataformaEditable";
+import NotaEditable from "./NotaEditable";
 import NombreEditable from "./NombreEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
 
@@ -83,6 +84,12 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
   async function cambiarPlataforma(item: Item, nuevaPlataforma: string | null) {
     setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, plataforma: nuevaPlataforma } : i)));
     await actualizarItem(item.id, { plataforma: nuevaPlataforma });
+    reload();
+  }
+
+  async function cambiarNota(item: Item, nuevaNota: number | null) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, nota: nuevaNota } : i)));
+    await actualizarItem(item.id, { nota: nuevaNota });
     reload();
   }
 
@@ -181,6 +188,9 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                               plataforma={item.plataforma}
                               onChange={(p) => cambiarPlataforma(item, p)}
                             />
+                            {vista && (
+                              <NotaEditable nota={item.nota} onChange={(n) => cambiarNota(item, n)} />
+                            )}
                             <button
                               onClick={() => eliminar(item.id)}
                               aria-label="Eliminar"
