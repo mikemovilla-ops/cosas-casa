@@ -9,6 +9,7 @@ import {
   fechaValida,
   importeValido,
   normalizarCantidad,
+  notaValida,
   ordenValido,
   tipoContenidoValido,
   TIPOS_PERSONALES,
@@ -101,6 +102,16 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       body.plataforma === null || typeof body.plataforma !== "string" || !body.plataforma.trim()
         ? null
         : body.plataforma.trim();
+  }
+
+  if ("nota" in body) {
+    if (body.nota === null) {
+      data.nota = null;
+    } else {
+      const nota = notaValida(body.nota);
+      if (nota === null) return NextResponse.json({ error: "nota inválida" }, { status: 400 });
+      data.nota = nota;
+    }
   }
 
   if ("orden" in body) {

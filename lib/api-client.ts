@@ -22,6 +22,7 @@ export type Item = {
   fecha: string | null;
   tipoContenido: TipoContenido | null;
   plataforma: string | null;
+  nota: number | null;
   orden: number;
   createdAt: string;
   updatedAt: string;
@@ -102,6 +103,7 @@ export async function actualizarItem(
     orden?: number;
     tipoContenido?: TipoContenido;
     plataforma?: string | null;
+    nota?: number | null;
   }
 ): Promise<Item> {
   const res = await fetch(`/api/items/${id}`, {

@@ -123,6 +123,8 @@ model Item {
   // encuentra (texto libre: Netflix, HBO Max, Filmin...).
   tipoContenido TipoContenido?
   plataforma    String?
+  // Nota de 1 a 10 una vez vista (solo tiene sentido con estado HECHO).
+  nota          Int?
   // Orden manual (arrastrar y soltar). Los items nuevos arrancan en
   // Date.now() (siempre mayor que 0), así que los ya existentes —que se
   // quedan en el valor por defecto 0— ordenan primero por createdAt sin
