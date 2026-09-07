@@ -102,6 +102,7 @@ enum EstadoItem {
   LARGO
   PENDIENTE
   HECHO
+  EN_CURSO
 }
 
 model Item {

@@ -1,5 +1,13 @@
 export type TipoLista = "COMPRA" | "CASA" | "TAREA" | "DEUDA" | "PELISERIE";
-export type EstadoItem = "A_COMPRAR" | "COMPRADO" | "URGENTE" | "MEDIO" | "LARGO" | "PENDIENTE" | "HECHO";
+export type EstadoItem =
+  | "A_COMPRAR"
+  | "COMPRADO"
+  | "URGENTE"
+  | "MEDIO"
+  | "LARGO"
+  | "PENDIENTE"
+  | "HECHO"
+  | "EN_CURSO";
 export type TipoContenido = "PELICULA" | "SERIE";
 
 export type Item = {
