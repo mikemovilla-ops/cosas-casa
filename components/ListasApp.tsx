@@ -5,10 +5,11 @@ import { actualizarPerfil, fetchPerfil, fetchUsuarios, type Usuario } from "@/li
 import { usePoll } from "@/lib/use-poll";
 import ListaCompra from "./ListaCompra";
 import ListaCasa from "./ListaCasa";
+import ListaPelisSeries from "./ListaPelisSeries";
 import ListaTareas from "./ListaTareas";
 import ListaDeudas from "./ListaDeudas";
 
-type Vista = "compra" | "casa" | "tareas" | "deudas";
+type Vista = "compra" | "casa" | "pelisseries" | "tareas" | "deudas";
 
 export default function ListasApp() {
   const [vista, setVista] = useState<Vista>("compra");
@@ -43,6 +44,9 @@ export default function ListasApp() {
         <TabButton activo={vista === "casa"} onClick={() => setVista("casa")}>
           🏠 Casa
         </TabButton>
+        <TabButton activo={vista === "pelisseries"} onClick={() => setVista("pelisseries")}>
+          🎬 Pelis/Series
+        </TabButton>
         {tareasDeudasActivado && (
           <>
             <TabButton activo={vista === "tareas"} onClick={() => setVista("tareas")}>
@@ -72,6 +76,7 @@ export default function ListasApp() {
 
       {vista === "compra" && <ListaCompra usuarios={usuarios} />}
       {vista === "casa" && <ListaCasa usuarios={usuarios} />}
+      {vista === "pelisseries" && <ListaPelisSeries usuarios={usuarios} />}
       {vista === "tareas" && tareasDeudasActivado && <ListaTareas />}
       {vista === "deudas" && tareasDeudasActivado && <ListaDeudas />}
     </div>

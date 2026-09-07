@@ -9,10 +9,11 @@ import {
   fechaValida,
   importeValido,
   normalizarCantidad,
+  tipoContenidoValido,
   TIPOS_PERSONALES,
 } from "@/lib/items";
 
-const TIPOS: TipoLista[] = ["COMPRA", "CASA", "TAREA", "DEUDA"];
+const TIPOS: TipoLista[] = ["COMPRA", "CASA", "TAREA", "DEUDA", "PELISERIE"];
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
@@ -72,6 +73,16 @@ export async function POST(request: Request) {
     fecha = fechaValida(body.fecha) ?? new Date();
   }
 
+  let tipoContenido: "PELICULA" | "SERIE" | null = null;
+  let plataforma: string | null = null;
+  if (tipo === "PELISERIE") {
+    if (!tipoContenidoValido(body.tipoContenido)) {
+      return NextResponse.json({ error: "tipoContenido inválido" }, { status: 400 });
+    }
+    tipoContenido = body.tipoContenido;
+    plataforma = typeof body.plataforma === "string" && body.plataforma.trim() ? body.plataforma.trim() : null;
+  }
+
   const item = await prisma.item.create({
     data: {
       tipo,
@@ -83,6 +94,8 @@ export async function POST(request: Request) {
       importe,
       meDeben,
       fecha,
+      tipoContenido,
+      plataforma,
       orden: Date.now(),
     },
   });

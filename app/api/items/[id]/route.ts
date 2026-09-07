@@ -10,6 +10,7 @@ import {
   importeValido,
   normalizarCantidad,
   ordenValido,
+  tipoContenidoValido,
   TIPOS_PERSONALES,
 } from "@/lib/items";
 
@@ -86,6 +87,20 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       if (!fecha) return NextResponse.json({ error: "fecha inválida" }, { status: 400 });
       data.fecha = fecha;
     }
+  }
+
+  if ("tipoContenido" in body) {
+    if (!tipoContenidoValido(body.tipoContenido)) {
+      return NextResponse.json({ error: "tipoContenido inválido" }, { status: 400 });
+    }
+    data.tipoContenido = body.tipoContenido;
+  }
+
+  if ("plataforma" in body) {
+    data.plataforma =
+      body.plataforma === null || typeof body.plataforma !== "string" || !body.plataforma.trim()
+        ? null
+        : body.plataforma.trim();
   }
 
   if ("orden" in body) {

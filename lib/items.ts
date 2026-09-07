@@ -1,4 +1,4 @@
-import type { EstadoItem, TipoLista } from "@prisma/client";
+import type { EstadoItem, TipoContenido, TipoLista } from "@prisma/client";
 
 // Qué estados son válidos para cada tipo de lista — evita que, por ejemplo,
 // un item de COMPRA acabe con estado URGENTE por un body manipulado a mano.
@@ -7,6 +7,7 @@ const ESTADOS_POR_TIPO: Record<TipoLista, EstadoItem[]> = {
   CASA: ["URGENTE", "MEDIO", "LARGO", "COMPRADO"],
   TAREA: ["PENDIENTE", "HECHO"],
   DEUDA: ["PENDIENTE", "HECHO"],
+  PELISERIE: ["PENDIENTE", "HECHO"],
 };
 
 export const ESTADO_INICIAL: Record<TipoLista, EstadoItem> = {
@@ -14,7 +15,14 @@ export const ESTADO_INICIAL: Record<TipoLista, EstadoItem> = {
   CASA: "MEDIO",
   TAREA: "PENDIENTE",
   DEUDA: "PENDIENTE",
+  PELISERIE: "PENDIENTE",
 };
+
+const TIPOS_CONTENIDO: TipoContenido[] = ["PELICULA", "SERIE"];
+
+export function tipoContenidoValido(valor: unknown): valor is TipoContenido {
+  return typeof valor === "string" && (TIPOS_CONTENIDO as string[]).includes(valor);
+}
 
 // TAREA y DEUDA son personales: solo las ve/gestiona quien las creó. COMPRA
 // y CASA son compartidas entre los dos usuarios.
