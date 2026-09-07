@@ -1,5 +1,6 @@
-export type TipoLista = "COMPRA" | "CASA" | "TAREA" | "DEUDA";
+export type TipoLista = "COMPRA" | "CASA" | "TAREA" | "DEUDA" | "PELISERIE";
 export type EstadoItem = "A_COMPRAR" | "COMPRADO" | "URGENTE" | "MEDIO" | "LARGO" | "PENDIENTE" | "HECHO";
+export type TipoContenido = "PELICULA" | "SERIE";
 
 export type Item = {
   id: string;
@@ -11,6 +12,8 @@ export type Item = {
   importe: number | null;
   meDeben: boolean | null;
   fecha: string | null;
+  tipoContenido: TipoContenido | null;
+  plataforma: string | null;
   orden: number;
   createdAt: string;
   updatedAt: string;
@@ -64,6 +67,8 @@ export async function crearItem(
     importe?: number;
     meDeben?: boolean;
     fecha?: string;
+    tipoContenido?: TipoContenido;
+    plataforma?: string;
   }
 ): Promise<Item> {
   const res = await fetch("/api/items", {
@@ -87,6 +92,8 @@ export async function actualizarItem(
     meDeben?: boolean;
     fecha?: string | null;
     orden?: number;
+    tipoContenido?: TipoContenido;
+    plataforma?: string | null;
   }
 ): Promise<Item> {
   const res = await fetch(`/api/items/${id}`, {
