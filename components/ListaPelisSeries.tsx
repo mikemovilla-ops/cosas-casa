@@ -19,6 +19,7 @@ import PlataformaEditable from "./PlataformaEditable";
 import NotaEditable from "./NotaEditable";
 import NombreEditable from "./NombreEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
+import ColumnaDesplegable from "./ColumnaDesplegable";
 
 // Tailwind necesita las clases completas y estáticas en el código para
 // detectarlas al compilar — de ahí el mapa en vez de construir el nombre
@@ -154,10 +155,7 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
           const vista = cat.estado === "HECHO";
           const itemsColumna = items.filter((i) => i.estado === cat.estado).sort((a, b) => a.orden - b.orden);
           return (
-            <div key={cat.estado}>
-              <h2 className={`font-semibold mb-2 ${cat.textClass}`}>
-                {cat.label} <span className="text-ink/40 font-normal">({itemsColumna.length})</span>
-              </h2>
+            <ColumnaDesplegable key={cat.estado} titulo={cat.label} count={itemsColumna.length} colorClass={cat.textClass}>
               {itemsColumna.length === 0 ? (
                 <p className="text-ink/40 text-sm italic">Nada por aquí</p>
               ) : (
@@ -204,7 +202,11 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                               <button
                                 key={c.estado}
                                 onClick={() => mover(item, c.estado)}
-                                className="text-xs text-ink/50 border border-sand rounded px-1.5 py-0.5 hover:border-sage hover:text-sagedark transition"
+                                className={`text-xs rounded px-1.5 py-0.5 border transition ${
+                                  c.estado === "HECHO"
+                                    ? "border-emerald-600/40 text-emerald-600 hover:bg-emerald-600 hover:text-white"
+                                    : "border-sand text-ink/50 hover:border-sage hover:text-sagedark"
+                                }`}
                               >
                                 → {c.label}
                               </button>
@@ -216,7 +218,7 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                   )}
                 </ListaOrdenable>
               )}
-            </div>
+            </ColumnaDesplegable>
           );
         })}
       </div>

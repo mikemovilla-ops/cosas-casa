@@ -15,6 +15,7 @@ import AsignadoBadge from "./AsignadoBadge";
 import CantidadStepper from "./CantidadStepper";
 import NombreEditable from "./NombreEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
+import ColumnaDesplegable from "./ColumnaDesplegable";
 
 export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
   const { items, setItems, reload } = usePoll<Item>(() => fetchItems("COMPRA"));
@@ -174,10 +175,7 @@ function Columna({
   tachado: boolean;
 }) {
   return (
-    <div>
-      <h2 className="font-semibold text-sagedark mb-2">
-        {titulo} <span className="text-ink/40 font-normal">({items.length})</span>
-      </h2>
+    <ColumnaDesplegable titulo={titulo} count={items.length}>
       {items.length === 0 ? (
         <p className="text-ink/40 text-sm italic">{vacio}</p>
       ) : (
@@ -216,6 +214,6 @@ function Columna({
           )}
         </ListaOrdenable>
       )}
-    </div>
+    </ColumnaDesplegable>
   );
 }

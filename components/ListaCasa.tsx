@@ -17,6 +17,7 @@ import CantidadStepper from "./CantidadStepper";
 import EnlaceCasa from "./EnlaceCasa";
 import NombreEditable from "./NombreEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
+import ColumnaDesplegable from "./ColumnaDesplegable";
 
 // Tailwind necesita las clases completas y estáticas en el código para
 // detectarlas al compilar — de ahí el mapa en vez de construir el nombre
@@ -162,10 +163,7 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
             .filter((i) => i.estado === cat.estado)
             .sort((a, b) => a.orden - b.orden);
           return (
-            <div key={cat.estado}>
-              <h2 className={`font-semibold mb-2 ${cat.textClass}`}>
-                {cat.label} <span className="text-ink/40 font-normal">({itemsColumna.length})</span>
-              </h2>
+            <ColumnaDesplegable key={cat.estado} titulo={cat.label} count={itemsColumna.length} colorClass={cat.textClass}>
               {itemsColumna.length === 0 ? (
                 <p className="text-ink/40 text-sm italic">Nada por aquí</p>
               ) : (
@@ -228,7 +226,7 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                   )}
                 </ListaOrdenable>
               )}
-            </div>
+            </ColumnaDesplegable>
           );
         })}
       </div>
