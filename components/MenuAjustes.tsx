@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useNavegacion } from "@/contexts/NavegacionContext";
 
 const CLAVE_LOCALSTORAGE = "nuestra-casa-color-fondo";
 
@@ -20,9 +21,15 @@ function aplicarColor(valor: string) {
   document.documentElement.style.setProperty("--bg-color", valor);
 }
 
-export default function AjustesColor({ align = "right" }: { align?: "left" | "right" }) {
+// Menú único de ajustes personales: color de fondo (solo local, por
+// dispositivo) y mostrar/ocultar las pestañas privadas de Tareas y Deudas
+// (guardado en el servidor, ver NavegacionContext). Antes vivían como
+// controles sueltos por la barra de navegación; agruparlos aquí evita tener
+// que duplicar la lógica de escritorio/móvil dos veces.
+export default function MenuAjustes({ align = "right" }: { align?: "left" | "right" }) {
   const [abierto, setAbierto] = useState(false);
   const [colorActual, setColorActual] = useState<string>(COLORES[0].valor);
+  const { tareasDeudasActivado, activarTareasDeudas, desactivarTareasDeudas } = useNavegacion();
 
   useEffect(() => {
     try {
@@ -36,7 +43,7 @@ export default function AjustesColor({ align = "right" }: { align?: "left" | "ri
     }
   }, []);
 
-  function elegir(valor: string) {
+  function elegirColor(valor: string) {
     setColorActual(valor);
     aplicarColor(valor);
     try {
@@ -44,7 +51,6 @@ export default function AjustesColor({ align = "right" }: { align?: "left" | "ri
     } catch {
       // Ver arriba: si falla, el color se aplica igual, solo no se recuerda al recargar.
     }
-    setAbierto(false);
   }
 
   return (
@@ -52,8 +58,8 @@ export default function AjustesColor({ align = "right" }: { align?: "left" | "ri
       <button
         type="button"
         onClick={() => setAbierto((v) => !v)}
-        title="Ajustes: color de fondo"
-        aria-label="Ajustes: color de fondo"
+        title="Ajustes"
+        aria-label="Ajustes"
         aria-expanded={abierto}
         className="text-ink/50 hover:text-sage transition text-lg leading-none px-1"
       >
@@ -68,7 +74,7 @@ export default function AjustesColor({ align = "right" }: { align?: "left" | "ri
             onClick={() => setAbierto(false)}
           />
           <div
-            className={`absolute mt-2 w-48 max-w-[calc(100vw-2rem)] card z-40 p-2 ${
+            className={`absolute mt-2 w-56 max-w-[calc(100vw-2rem)] card z-40 p-2 ${
               align === "left" ? "left-0" : "right-0"
             }`}
           >
@@ -76,7 +82,7 @@ export default function AjustesColor({ align = "right" }: { align?: "left" | "ri
             {COLORES.map((c) => (
               <button
                 key={c.id}
-                onClick={() => elegir(c.valor)}
+                onClick={() => elegirColor(c.valor)}
                 className={`w-full flex items-center gap-2 text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition ${
                   colorActual === c.valor ? "font-semibold text-sagedark" : "text-ink"
                 }`}
@@ -89,6 +95,31 @@ export default function AjustesColor({ align = "right" }: { align?: "left" | "ri
                 {colorActual === c.valor && <span className="ml-auto text-sage">✓</span>}
               </button>
             ))}
+
+            <div className="border-t border-sand mt-2 pt-2">
+              <p className="text-xs text-ink/40 px-1.5 pb-1.5">Pestañas privadas (solo tú)</p>
+              {tareasDeudasActivado ? (
+                <button
+                  onClick={() => {
+                    desactivarTareasDeudas();
+                    setAbierto(false);
+                  }}
+                  className="w-full flex items-center gap-2 text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition text-ink"
+                >
+                  ✅💶 Ocultar Tareas y Deudas
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    activarTareasDeudas();
+                    setAbierto(false);
+                  }}
+                  className="w-full flex items-center gap-2 text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition text-ink"
+                >
+                  ✅💶 Activar Tareas y Deudas
+                </button>
+              )}
+            </div>
           </div>
         </>
       )}
