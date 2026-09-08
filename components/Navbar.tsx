@@ -73,7 +73,22 @@ function NavbarAutenticado({
               <TabDesktop activo={vista === "deudas"} onClick={() => irA("deudas")}>
                 💶 Deudas
               </TabDesktop>
+              <button
+                onClick={desactivarTareasDeudas}
+                title="Deja de mostrar las pestañas Tareas y Deudas (tus datos no se borran)"
+                className="text-xs text-ink/30 hover:text-clay underline underline-offset-2 ml-1 whitespace-nowrap"
+              >
+                Ocultar
+              </button>
             </>
+          )}
+          {tareasDeudasActivado === false && (
+            <button
+              onClick={activarTareasDeudas}
+              className="text-xs text-ink/40 hover:text-sage underline underline-offset-2 ml-1 whitespace-nowrap"
+            >
+              + Tareas y Deudas
+            </button>
           )}
         </nav>
 
