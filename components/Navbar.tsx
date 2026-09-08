@@ -153,7 +153,7 @@ function NavbarAutenticado({
                   className="rounded-full border border-sand"
                 />
               )}
-              <AjustesColor />
+              <AjustesColor align="left" />
             </div>
             <button onClick={() => signOut()} className="text-sm text-ink/60 hover:text-clay transition px-3">
               Salir

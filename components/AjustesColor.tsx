@@ -20,7 +20,7 @@ function aplicarColor(valor: string) {
   document.documentElement.style.setProperty("--bg-color", valor);
 }
 
-export default function AjustesColor() {
+export default function AjustesColor({ align = "right" }: { align?: "left" | "right" }) {
   const [abierto, setAbierto] = useState(false);
   const [colorActual, setColorActual] = useState<string>(COLORES[0].valor);
 
@@ -67,7 +67,11 @@ export default function AjustesColor() {
             className="fixed inset-0 z-30 cursor-default"
             onClick={() => setAbierto(false)}
           />
-          <div className="absolute right-0 mt-2 w-48 card z-40 p-2">
+          <div
+            className={`absolute mt-2 w-48 max-w-[calc(100vw-2rem)] card z-40 p-2 ${
+              align === "left" ? "left-0" : "right-0"
+            }`}
+          >
             <p className="text-xs text-ink/40 px-1.5 pb-1.5">Color de fondo (solo tú)</p>
             {COLORES.map((c) => (
               <button
