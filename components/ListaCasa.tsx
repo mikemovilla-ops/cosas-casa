@@ -18,6 +18,7 @@ import EnlaceCasa from "./EnlaceCasa";
 import NombreEditable from "./NombreEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
 import ColumnaDesplegable from "./ColumnaDesplegable";
+import MenuAccionesItem from "./MenuAccionesItem";
 
 // Tailwind necesita las clases completas y estáticas en el código para
 // detectarlas al compilar — de ahí el mapa en vez de construir el nombre
@@ -188,6 +189,35 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                             </NombreEditable>
                             <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
                             <EnlaceCasa enlace={item.enlace} onChange={(url) => cambiarEnlace(item, url)} />
+                            <MenuAccionesItem>
+                              {(cerrar) => {
+                                const creador = usuarios.find((u) => u.id === item.creadoPorId);
+                                return (
+                                  <>
+                                    {creador && (
+                                      <p className="text-[11px] text-ink/40 px-1.5 pb-1.5">
+                                        Añadido por {creador.name?.split(" ")[0] ?? creador.email}
+                                      </p>
+                                    )}
+                                    <p className="text-xs text-ink/40 px-1.5 pb-1">Mover a</p>
+                                    {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
+                                      <button
+                                        key={c.estado}
+                                        onClick={() => {
+                                          mover(item, c.estado);
+                                          cerrar();
+                                        }}
+                                        className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition ${
+                                          c.estado === "COMPRADO" ? "text-emerald-600" : "text-ink"
+                                        }`}
+                                      >
+                                        → {c.label}
+                                      </button>
+                                    ))}
+                                  </>
+                                );
+                              }}
+                            </MenuAccionesItem>
                             <button
                               onClick={() => eliminar(item.id)}
                               aria-label="Eliminar"
@@ -195,30 +225,6 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                             >
                               ✕
                             </button>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-1 mt-1">
-                            {(() => {
-                              const creador = usuarios.find((u) => u.id === item.creadoPorId);
-                              if (!creador) return null;
-                              return (
-                                <span className="text-[10px] text-ink/35 mr-1">
-                                  Añadido por {creador.name?.split(" ")[0] ?? creador.email}
-                                </span>
-                              );
-                            })()}
-                            {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
-                              <button
-                                key={c.estado}
-                                onClick={() => mover(item, c.estado)}
-                                className={`text-xs rounded px-1.5 py-0.5 border transition ${
-                                  c.estado === "COMPRADO"
-                                    ? "border-emerald-600/40 text-emerald-600 hover:bg-emerald-600 hover:text-white"
-                                    : "border-sand text-ink/50 hover:border-sage hover:text-sagedark"
-                                }`}
-                              >
-                                → {c.label}
-                              </button>
-                            ))}
                           </div>
                         </>
                       )}
