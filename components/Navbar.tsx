@@ -4,7 +4,7 @@ import { useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useNavegacion, type Vista } from "@/contexts/NavegacionContext";
-import AjustesColor from "./AjustesColor";
+import MenuAjustes from "./MenuAjustes";
 
 const PESTANAS: { vista: Vista; label: string }[] = [
   { vista: "compra", label: "🛒 Compra" },
@@ -46,7 +46,7 @@ function NavbarAutenticado({
   menuAbierto: boolean;
   setMenuAbierto: (v: boolean) => void;
 }) {
-  const { vista, setVista, tareasDeudasActivado, activarTareasDeudas, desactivarTareasDeudas } = useNavegacion();
+  const { vista, setVista, tareasDeudasActivado } = useNavegacion();
 
   function irA(v: Vista) {
     setVista(v);
@@ -73,27 +73,12 @@ function NavbarAutenticado({
               <TabDesktop activo={vista === "deudas"} onClick={() => irA("deudas")}>
                 💶 Deudas
               </TabDesktop>
-              <button
-                onClick={desactivarTareasDeudas}
-                title="Deja de mostrar las pestañas Tareas y Deudas (tus datos no se borran)"
-                className="text-xs text-ink/30 hover:text-clay underline underline-offset-2 ml-1 whitespace-nowrap"
-              >
-                Ocultar
-              </button>
             </>
-          )}
-          {tareasDeudasActivado === false && (
-            <button
-              onClick={activarTareasDeudas}
-              className="text-xs text-ink/40 hover:text-sage underline underline-offset-2 ml-1 whitespace-nowrap"
-            >
-              + Tareas y Deudas
-            </button>
           )}
         </nav>
 
         <div className="hidden md:flex items-center gap-2 shrink-0">
-          <AjustesColor />
+          <MenuAjustes />
           {session?.user?.image && (
             <Image
               src={session.user.image}
@@ -140,21 +125,7 @@ function NavbarAutenticado({
               <TabMovil activo={vista === "deudas"} onClick={() => irA("deudas")}>
                 💶 Deudas
               </TabMovil>
-              <button
-                onClick={desactivarTareasDeudas}
-                className="text-left text-xs text-ink/40 hover:text-clay underline underline-offset-2 px-3 py-1"
-              >
-                Ocultar Tareas y Deudas
-              </button>
             </>
-          )}
-          {tareasDeudasActivado === false && (
-            <button
-              onClick={activarTareasDeudas}
-              className="text-left text-xs text-ink/40 hover:text-sage underline underline-offset-2 px-3 py-1"
-            >
-              + Activar Tareas y Deudas (privado, solo tú)
-            </button>
           )}
 
           <div className="flex items-center justify-between pt-2 mt-1 border-t border-sand">
@@ -168,7 +139,7 @@ function NavbarAutenticado({
                   className="rounded-full border border-sand"
                 />
               )}
-              <AjustesColor align="left" />
+              <MenuAjustes align="left" />
             </div>
             <button onClick={() => signOut()} className="text-sm text-ink/60 hover:text-clay transition px-3">
               Salir
