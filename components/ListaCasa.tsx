@@ -15,6 +15,7 @@ import { usePoll } from "@/lib/use-poll";
 import AsignadoBadge from "./AsignadoBadge";
 import CantidadStepper from "./CantidadStepper";
 import EnlaceCasa from "./EnlaceCasa";
+import EnlaceIndicador from "./EnlaceIndicador";
 import NombreEditable from "./NombreEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
 import ColumnaDesplegable from "./ColumnaDesplegable";
@@ -187,8 +188,10 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                                 </span>
                               )}
                             </NombreEditable>
-                            <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
-                            <EnlaceCasa enlace={item.enlace} onChange={(url) => cambiarEnlace(item, url)} />
+                            {item.cantidad > 1 && (
+                              <span className="shrink-0 text-xs font-semibold text-clay">×{item.cantidad}</span>
+                            )}
+                            {item.enlace && <EnlaceIndicador enlace={item.enlace} />}
                             <MenuAccionesItem>
                               {(cerrar) => {
                                 const creador = usuarios.find((u) => u.id === item.creadoPorId);
@@ -199,6 +202,23 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                                         Añadido por {creador.name?.split(" ")[0] ?? creador.email}
                                       </p>
                                     )}
+
+                                    <p className="text-xs text-ink/40 px-1.5 pb-1">Cantidad</p>
+                                    <div className="px-1.5 pb-2">
+                                      <CantidadStepper
+                                        cantidad={item.cantidad}
+                                        onChange={(n) => cambiarCantidad(item, n)}
+                                      />
+                                    </div>
+
+                                    <div className="border-t border-sand mb-1" />
+                                    <EnlaceCasa
+                                      enlace={item.enlace}
+                                      onChange={(url) => cambiarEnlace(item, url)}
+                                      cerrar={cerrar}
+                                    />
+
+                                    <div className="border-t border-sand my-1" />
                                     <p className="text-xs text-ink/40 px-1.5 pb-1">Mover a</p>
                                     {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
                                       <button
