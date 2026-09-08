@@ -8,7 +8,7 @@ import { NavegacionProvider } from "@/contexts/NavegacionContext";
 const body = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Nuestra Casa (C&M)",
+  title: "Cosas de Casa (C&M)",
   description: "Lista de la compra y cosas pendientes para casa, compartidas entre los dos",
 };
 

@@ -20,7 +20,7 @@ export default function Navbar() {
     return (
       <header className="sticky top-0 z-30 border-b border-sand bg-white">
         <div className="max-w-3xl mx-auto flex items-center justify-between px-4 py-3">
-          <span className="font-semibold text-lg text-sagedark">🏡 Nuestra Casa (C&amp;M)</span>
+          <span className="font-semibold text-lg text-sagedark">🏡 Cosas de Casa (C&amp;M)</span>
           {status === "unauthenticated" && (
             <button
               onClick={() => signIn("google")}
@@ -56,7 +56,7 @@ function NavbarAutenticado({
   return (
     <header className="sticky top-0 z-30 border-b border-sand bg-white">
       <div className="max-w-3xl mx-auto flex items-center justify-between gap-2 px-4 py-3">
-        <span className="font-semibold text-lg text-sagedark shrink-0">🏡 Nuestra Casa (C&amp;M)</span>
+        <span className="font-semibold text-lg text-sagedark shrink-0">🏡 Cosas de Casa (C&amp;M)</span>
 
         {/* Escritorio: pestañas en línea */}
         <nav className="hidden md:flex items-center gap-1 flex-wrap">
