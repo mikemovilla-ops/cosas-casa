@@ -4,6 +4,8 @@
 
 :root {
   --bg-color: #fbf7f0;
+  --color-sage: 107 143 113;
+  --color-sagedark: 79 107 84;
 }
 
 @layer base {
@@ -14,7 +16,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid #6b8f71;
+    outline: 2px solid rgb(var(--color-sage));
     outline-offset: 2px;
   }
 }

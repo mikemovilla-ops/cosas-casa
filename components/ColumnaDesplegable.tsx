@@ -3,8 +3,7 @@
 import { useState } from "react";
 
 // Envuelve el título+contador de cada columna (A comprar, Comprado...) para
-// que se pueda plegar/desplegar tocándolo. Abierta por defecto: no cambia
-// el comportamiento habitual, solo añade la opción de ocultarla.
+// que se pueda plegar/desplegar tocándolo. Encogida por defecto.
 export default function ColumnaDesplegable({
   titulo,
   count,
@@ -20,7 +19,7 @@ export default function ColumnaDesplegable({
   extra?: React.ReactNode;
   children: React.ReactNode;
 }) {
-  const [abierta, setAbierta] = useState(true);
+  const [abierta, setAbierta] = useState(false);
 
   return (
     <div>

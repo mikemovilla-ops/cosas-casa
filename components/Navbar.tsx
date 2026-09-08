@@ -4,12 +4,12 @@ import { useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useNavegacion, type Vista } from "@/contexts/NavegacionContext";
-import MenuAjustes from "./MenuAjustes";
+import MenuAjustes, { ContenidoAjustes } from "./MenuAjustes";
 
-const PESTANAS: { vista: Vista; label: string }[] = [
-  { vista: "compra", label: "🛒 Compra" },
-  { vista: "casa", label: "🏠 Casa" },
-  { vista: "pelisseries", label: "🎬 Pelis/Series" },
+const PESTANAS: { vista: Vista; icon: string; label: string }[] = [
+  { vista: "compra", icon: "🛒", label: "Compra" },
+  { vista: "casa", icon: "🏠", label: "Casa" },
+  { vista: "pelisseries", icon: "🎬", label: "Pelis" },
 ];
 
 export default function Navbar() {
@@ -48,106 +48,116 @@ function NavbarAutenticado({
 }) {
   const { vista, setVista, tareasDeudasActivado } = useNavegacion();
 
+  const pestanas = [
+    ...PESTANAS,
+    ...(tareasDeudasActivado
+      ? [
+          { vista: "tareas" as Vista, icon: "✅", label: "Tareas" },
+          { vista: "deudas" as Vista, icon: "💶", label: "Deudas" },
+        ]
+      : []),
+  ];
+
   function irA(v: Vista) {
     setVista(v);
-    setMenuAbierto(false);
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-sand bg-white">
-      <div className="max-w-3xl mx-auto flex items-center justify-between gap-2 px-4 py-3">
-        <span className="font-semibold text-lg text-sagedark shrink-0">🏡 Cosas de Casa (C&amp;M)</span>
+    <>
+      <header className="sticky top-0 z-30 border-b border-sand bg-white">
+        <div className="max-w-3xl mx-auto flex items-center justify-between gap-2 px-4 py-3">
+          <span className="font-semibold text-lg text-sagedark shrink-0">🏡 Cosas de Casa (C&amp;M)</span>
 
-        {/* Escritorio: pestañas en línea */}
-        <nav className="hidden md:flex items-center gap-1 flex-wrap">
-          {PESTANAS.map((p) => (
-            <TabDesktop key={p.vista} activo={vista === p.vista} onClick={() => irA(p.vista)}>
-              {p.label}
-            </TabDesktop>
-          ))}
-          {tareasDeudasActivado && (
-            <>
-              <TabDesktop activo={vista === "tareas"} onClick={() => irA("tareas")}>
-                ✅ Tareas
+          {/* Escritorio: pestañas en línea */}
+          <nav className="hidden md:flex items-center gap-1 flex-wrap">
+            {pestanas.map((p) => (
+              <TabDesktop key={p.vista} activo={vista === p.vista} onClick={() => irA(p.vista)}>
+                {p.icon} {p.label}
               </TabDesktop>
-              <TabDesktop activo={vista === "deudas"} onClick={() => irA("deudas")}>
-                💶 Deudas
-              </TabDesktop>
-            </>
-          )}
-        </nav>
+            ))}
+          </nav>
 
-        <div className="hidden md:flex items-center gap-2 shrink-0">
-          <MenuAjustes />
-          {session?.user?.image && (
-            <Image
-              src={session.user.image}
-              alt={session.user.name ?? "Usuario"}
-              width={28}
-              height={28}
-              className="rounded-full border border-sand"
-            />
-          )}
-          <button onClick={() => signOut()} className="text-sm text-ink/60 hover:text-clay transition">
-            Salir
-          </button>
-        </div>
-
-        {/* Móvil: hamburguesa */}
-        <button
-          onClick={() => setMenuAbierto(!menuAbierto)}
-          aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
-          aria-expanded={menuAbierto}
-          className="md:hidden flex h-9 w-9 shrink-0 flex-col items-center justify-center gap-1.5 rounded-md border border-sand"
-        >
-          <span
-            className={`block h-0.5 w-5 bg-ink transition-transform ${menuAbierto ? "translate-y-2 rotate-45" : ""}`}
-          />
-          <span className={`block h-0.5 w-5 bg-ink transition-opacity ${menuAbierto ? "opacity-0" : ""}`} />
-          <span
-            className={`block h-0.5 w-5 bg-ink transition-transform ${menuAbierto ? "-translate-y-2 -rotate-45" : ""}`}
-          />
-        </button>
-      </div>
-
-      {menuAbierto && (
-        <nav className="md:hidden border-t border-sand px-4 py-3 flex flex-col gap-1">
-          {PESTANAS.map((p) => (
-            <TabMovil key={p.vista} activo={vista === p.vista} onClick={() => irA(p.vista)}>
-              {p.label}
-            </TabMovil>
-          ))}
-          {tareasDeudasActivado && (
-            <>
-              <TabMovil activo={vista === "tareas"} onClick={() => irA("tareas")}>
-                ✅ Tareas
-              </TabMovil>
-              <TabMovil activo={vista === "deudas"} onClick={() => irA("deudas")}>
-                💶 Deudas
-              </TabMovil>
-            </>
-          )}
-
-          <div className="flex items-center justify-between pt-2 mt-1 border-t border-sand">
-            <div className="flex items-center gap-2">
-              {session?.user?.image && (
-                <Image
-                  src={session.user.image}
-                  alt={session.user.name ?? "Usuario"}
-                  width={28}
-                  height={28}
-                  className="rounded-full border border-sand"
-                />
-              )}
-              <MenuAjustes align="left" />
-            </div>
-            <button onClick={() => signOut()} className="text-sm text-ink/60 hover:text-clay transition px-3">
+          <div className="hidden md:flex items-center gap-2 shrink-0">
+            <MenuAjustes />
+            {session?.user?.image && (
+              <Image
+                src={session.user.image}
+                alt={session.user.name ?? "Usuario"}
+                width={28}
+                height={28}
+                className="rounded-full border border-sand"
+              />
+            )}
+            <button onClick={() => signOut()} className="text-sm text-ink/60 hover:text-clay transition">
               Salir
             </button>
           </div>
-        </nav>
+        </div>
+      </header>
+
+      {/* Móvil: barra de pestañas fija abajo, con "Menú" para ajustes/perfil */}
+      <nav
+        className="md:hidden fixed bottom-0 inset-x-0 z-30 flex items-stretch bg-white border-t border-sand"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
+        {pestanas.map((p) => (
+          <TabInferior
+            key={p.vista}
+            icon={p.icon}
+            label={p.label}
+            activo={vista === p.vista}
+            onClick={() => irA(p.vista)}
+          />
+        ))}
+        <TabInferior
+          icon="☰"
+          label="Menú"
+          activo={menuAbierto}
+          aria-expanded={menuAbierto}
+          onClick={() => setMenuAbierto(!menuAbierto)}
+        />
+      </nav>
+
+      {menuAbierto && (
+        <>
+          <button
+            type="button"
+            aria-label="Cerrar menú"
+            className="md:hidden fixed inset-0 z-30 bg-ink/20"
+            onClick={() => setMenuAbierto(false)}
+          />
+          <div
+            className="md:hidden fixed bottom-14 inset-x-0 z-40 bg-white border-t border-sand rounded-t-2xl shadow-lg p-3 max-h-[70vh] overflow-y-auto"
+            style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+          >
+            <div className="flex items-center justify-between pb-3 mb-2 border-b border-sand px-1">
+              <div className="flex items-center gap-2 min-w-0">
+                {session?.user?.image && (
+                  <Image
+                    src={session.user.image}
+                    alt={session.user.name ?? "Usuario"}
+                    width={32}
+                    height={32}
+                    className="rounded-full border border-sand shrink-0"
+                  />
+                )}
+                <span className="text-sm font-medium text-ink truncate">{session?.user?.name}</span>
+              </div>
+              <button
+                onClick={() => {
+                  setMenuAbierto(false);
+                  signOut();
+                }}
+                className="text-sm text-clay shrink-0 px-2"
+              >
+                Salir
+              </button>
+            </div>
+            <ContenidoAjustes onAccion={() => setMenuAbierto(false)} />
+          </div>
+        </>
       )}
-    </header>
+    </>
   );
 }
 
@@ -172,23 +182,30 @@ function TabDesktop({
   );
 }
 
-function TabMovil({
+function TabInferior({
+  icon,
+  label,
   activo,
   onClick,
-  children,
+  ...rest
 }: {
+  icon: string;
+  label: string;
   activo: boolean;
   onClick: () => void;
-  children: React.ReactNode;
+  "aria-expanded"?: boolean;
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`text-left px-3 py-2 rounded-md text-sm font-medium transition ${
-        activo ? "bg-sage text-white" : "text-ink/70 hover:bg-sand/40"
+      className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 min-w-0 text-[11px] font-medium transition ${
+        activo ? "text-sagedark" : "text-ink/50"
       }`}
+      {...rest}
     >
-      {children}
+      <span className="text-lg leading-none">{icon}</span>
+      <span className="truncate max-w-full">{label}</span>
     </button>
   );
 }
