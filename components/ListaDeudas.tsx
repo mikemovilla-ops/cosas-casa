@@ -6,6 +6,7 @@ import { usePoll } from "@/lib/use-poll";
 import NombreEditable from "./NombreEditable";
 import FechaEditable from "./FechaEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
+import ColumnaDesplegable from "./ColumnaDesplegable";
 
 function euros(n: number) {
   return n.toLocaleString("es-ES", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
@@ -172,15 +173,17 @@ function Columna({
     .reduce((suma, i) => suma + (i.importe ?? 0), 0);
 
   return (
-    <div>
-      <h2 className="font-semibold text-sagedark mb-2">
-        {titulo} <span className="text-ink/40 font-normal">({items.length})</span>
-      </h2>
-      {items.length > 0 && (
-        <p className="text-sm text-ink/60 mb-2">
-          Total pendiente: <span className="font-semibold text-ink">{euros(totalPendiente)}</span>
-        </p>
-      )}
+    <ColumnaDesplegable
+      titulo={titulo}
+      count={items.length}
+      extra={
+        items.length > 0 && (
+          <p className="text-sm text-ink/60 mb-2">
+            Total pendiente: <span className="font-semibold text-ink">{euros(totalPendiente)}</span>
+          </p>
+        )
+      }
+    >
       {items.length === 0 ? (
         <p className="text-ink/40 text-sm italic">{vacio}</p>
       ) : (
@@ -224,6 +227,6 @@ function Columna({
           }}
         </ListaOrdenable>
       )}
-    </div>
+    </ColumnaDesplegable>
   );
 }

@@ -2,10 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-color: #fbf7f0;
+}
+
 @layer base {
   body {
-    background-color: #fbf7f0;
+    background-color: var(--bg-color);
     color: #2b2620;
+    transition: background-color 0.2s ease;
   }
 
   :focus-visible {

@@ -6,6 +6,7 @@ import { usePoll } from "@/lib/use-poll";
 import NombreEditable from "./NombreEditable";
 import FechaEditable from "./FechaEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
+import ColumnaDesplegable from "./ColumnaDesplegable";
 
 // Lista personal (solo la ve quien la crea) — sin asignar a nadie, sin
 // enlace, sin cantidad: es una lista de tareas propias, no algo a comprar.
@@ -130,10 +131,7 @@ function Columna({
   tachado: boolean;
 }) {
   return (
-    <div>
-      <h2 className={`font-semibold mb-2 ${tachado ? "text-emerald-600" : "text-sagedark"}`}>
-        {titulo} <span className="text-ink/40 font-normal">({items.length})</span>
-      </h2>
+    <ColumnaDesplegable titulo={titulo} count={items.length} colorClass={tachado ? "text-emerald-600" : "text-sagedark"}>
       {items.length === 0 ? (
         <p className="text-ink/40 text-sm italic">{vacio}</p>
       ) : (
@@ -171,6 +169,6 @@ function Columna({
           )}
         </ListaOrdenable>
       )}
-    </div>
+    </ColumnaDesplegable>
   );
 }
