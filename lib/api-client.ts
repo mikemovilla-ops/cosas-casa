@@ -1,4 +1,4 @@
-export type TipoLista = "COMPRA" | "CASA" | "TAREA" | "DEUDA" | "PELISERIE";
+export type TipoLista = "COMPRA" | "CASA" | "TAREA" | "DEUDA" | "PELISERIE" | "RESTAURANTE";
 export type EstadoItem =
   | "A_COMPRAR"
   | "COMPRADO"

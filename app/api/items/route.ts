@@ -13,7 +13,7 @@ import {
   TIPOS_PERSONALES,
 } from "@/lib/items";
 
-const TIPOS: TipoLista[] = ["COMPRA", "CASA", "TAREA", "DEUDA", "PELISERIE"];
+const TIPOS: TipoLista[] = ["COMPRA", "CASA", "TAREA", "DEUDA", "PELISERIE", "RESTAURANTE"];
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);

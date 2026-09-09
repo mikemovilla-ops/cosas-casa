@@ -71,15 +71,16 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// Tipo de lista al que pertenece el item. COMPRA, CASA y PELISERIE son
-// compartidas entre los dos usuarios; TAREA y DEUDA son personales (solo las
-// ve quien las creó, ver app/api/items).
+// Tipo de lista al que pertenece el item. COMPRA, CASA, PELISERIE y
+// RESTAURANTE son compartidas entre los dos usuarios; TAREA y DEUDA son
+// personales (solo las ve quien las creó, ver app/api/items).
 enum TipoLista {
   COMPRA
   CASA
   TAREA
   DEUDA
   PELISERIE
+  RESTAURANTE
 }
 
 // Solo para items de PELISERIE.
@@ -123,7 +124,8 @@ model Item {
   // encuentra (texto libre: Netflix, HBO Max, Filmin...).
   tipoContenido TipoContenido?
   plataforma    String?
-  // Nota de 1 a 10 una vez vista (solo tiene sentido con estado HECHO).
+  // Nota de 1 a 10 una vez vista/visitado (PELISERIE y RESTAURANTE, solo
+  // tiene sentido con estado HECHO).
   nota          Int?
   // Orden manual (arrastrar y soltar). Los items nuevos arrancan en
   // Date.now() (siempre mayor que 0), así que los ya existentes —que se
