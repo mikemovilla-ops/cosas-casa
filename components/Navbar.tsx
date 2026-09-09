@@ -101,13 +101,14 @@ function NavbarAutenticado({
         )}
       </header>
 
-      {/* Móvil: barra de pestañas fija abajo, con "Menú" para ajustes/perfil.
-          Igual que en escritorio, Tareas/Deudas (personales) no van aquí —
-          con 4 compartidas + 2 personales + Menú no cabían sin recortar el
-          texto — sino dentro de la hoja de "Menú". */}
+      {/* Móvil: barra de pestañas flotante abajo (no toca ni los lados ni el
+          borde inferior), con "Menú" para ajustes/perfil. Igual que en
+          escritorio, Tareas/Deudas (personales) no van aquí — con 4
+          compartidas + 2 personales + Menú no cabían sin recortar el texto —
+          sino dentro de la hoja de "Menú". */}
       <nav
-        className="md:hidden fixed bottom-0 inset-x-0 z-30 flex items-stretch bg-white border-t border-sand"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        className="md:hidden fixed left-3 right-3 z-30 flex items-stretch bg-white border border-sand rounded-2xl shadow-lg"
+        style={{ bottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
       >
         {PESTANAS.map((p) => (
           <TabInferior
@@ -136,8 +137,8 @@ function NavbarAutenticado({
             onClick={() => setMenuAbierto(false)}
           />
           <div
-            className="md:hidden fixed bottom-14 inset-x-0 z-40 bg-white border-t border-sand rounded-t-2xl shadow-lg p-3 max-h-[70vh] overflow-y-auto"
-            style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+            className="md:hidden fixed left-3 right-3 z-40 bg-white border border-sand rounded-2xl shadow-lg p-3 max-h-[70vh] overflow-y-auto"
+            style={{ bottom: "calc(4.75rem + env(safe-area-inset-bottom))" }}
           >
             <div className="flex items-center justify-between pb-3 mb-2 border-b border-sand px-1">
               <div className="flex items-center gap-2 min-w-0">
