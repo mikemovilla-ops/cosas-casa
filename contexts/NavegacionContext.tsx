@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { actualizarPerfil, fetchPerfil } from "@/lib/api-client";
 
-export type Vista = "compra" | "casa" | "pelisseries" | "tareas" | "deudas";
+export type Vista = "compra" | "casa" | "pelisseries" | "restaurantes" | "tareas" | "deudas";
 
 type NavegacionContextValue = {
   vista: Vista;

@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Envuelve el título+contador de cada columna (A comprar, Comprado...) para
-// que se pueda plegar/desplegar tocándolo. Encogida por defecto.
+// que se pueda plegar/desplegar tocándolo. Encogida por defecto (pantallas
+// pequeñas, donde varias columnas desplegadas a la vez no caben); en
+// escritorio hay sitio de sobra, así que arranca desplegada — el useEffect
+// solo corrige el estado inicial tras montar, para no depender de `window`
+// durante el render de servidor.
 export default function ColumnaDesplegable({
   titulo,
   count,
@@ -20,6 +24,10 @@ export default function ColumnaDesplegable({
   children: React.ReactNode;
 }) {
   const [abierta, setAbierta] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(min-width: 768px)").matches) setAbierta(true);
+  }, []);
 
   return (
     <div>

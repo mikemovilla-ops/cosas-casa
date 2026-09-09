@@ -8,6 +8,7 @@ const ESTADOS_POR_TIPO: Record<TipoLista, EstadoItem[]> = {
   TAREA: ["PENDIENTE", "HECHO"],
   DEUDA: ["PENDIENTE", "HECHO"],
   PELISERIE: ["PENDIENTE", "EN_CURSO", "HECHO"],
+  RESTAURANTE: ["PENDIENTE", "HECHO"],
 };
 
 export const ESTADO_INICIAL: Record<TipoLista, EstadoItem> = {
@@ -16,6 +17,7 @@ export const ESTADO_INICIAL: Record<TipoLista, EstadoItem> = {
   TAREA: "PENDIENTE",
   DEUDA: "PENDIENTE",
   PELISERIE: "PENDIENTE",
+  RESTAURANTE: "PENDIENTE",
 };
 
 const TIPOS_CONTENIDO: TipoContenido[] = ["PELICULA", "SERIE"];

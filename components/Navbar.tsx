@@ -10,6 +10,7 @@ const PESTANAS: { vista: Vista; icon: string; label: string }[] = [
   { vista: "compra", icon: "🛒", label: "Compra" },
   { vista: "casa", icon: "🏠", label: "Casa" },
   { vista: "pelisseries", icon: "🎬", label: "Pelis" },
+  { vista: "restaurantes", icon: "🍽️", label: "Restos" },
 ];
 
 export default function Navbar() {
@@ -48,16 +49,6 @@ function NavbarAutenticado({
 }) {
   const { vista, setVista, tareasDeudasActivado } = useNavegacion();
 
-  const pestanas = [
-    ...PESTANAS,
-    ...(tareasDeudasActivado
-      ? [
-          { vista: "tareas" as Vista, icon: "✅", label: "Tareas" },
-          { vista: "deudas" as Vista, icon: "💶", label: "Deudas" },
-        ]
-      : []),
-  ];
-
   function irA(v: Vista) {
     setVista(v);
   }
@@ -68,9 +59,10 @@ function NavbarAutenticado({
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-2 px-4 py-3">
           <span className="font-semibold text-lg text-sagedark shrink-0">🏡 Cosas de Casa (C&amp;M)</span>
 
-          {/* Escritorio: pestañas en línea */}
+          {/* Escritorio: pestañas compartidas en línea. Tareas/Deudas (personales)
+              van aparte, debajo, para no mezclarlas con las compartidas. */}
           <nav className="hidden md:flex items-center gap-1 flex-wrap">
-            {pestanas.map((p) => (
+            {PESTANAS.map((p) => (
               <TabDesktop key={p.vista} activo={vista === p.vista} onClick={() => irA(p.vista)}>
                 {p.icon} {p.label}
               </TabDesktop>
@@ -93,14 +85,31 @@ function NavbarAutenticado({
             </button>
           </div>
         </div>
+
+        {tareasDeudasActivado && (
+          <div className="hidden md:block border-t border-sand bg-sand/10">
+            <div className="max-w-3xl mx-auto flex items-center gap-1 px-4 py-1.5">
+              <span className="text-[11px] text-ink/40 mr-1">Privado:</span>
+              <TabDesktop activo={vista === "tareas"} onClick={() => irA("tareas")}>
+                ✅ Tareas
+              </TabDesktop>
+              <TabDesktop activo={vista === "deudas"} onClick={() => irA("deudas")}>
+                💶 Deudas
+              </TabDesktop>
+            </div>
+          </div>
+        )}
       </header>
 
-      {/* Móvil: barra de pestañas fija abajo, con "Menú" para ajustes/perfil */}
+      {/* Móvil: barra de pestañas fija abajo, con "Menú" para ajustes/perfil.
+          Igual que en escritorio, Tareas/Deudas (personales) no van aquí —
+          con 4 compartidas + 2 personales + Menú no cabían sin recortar el
+          texto — sino dentro de la hoja de "Menú". */}
       <nav
         className="md:hidden fixed bottom-0 inset-x-0 z-30 flex items-stretch bg-white border-t border-sand"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        {pestanas.map((p) => (
+        {PESTANAS.map((p) => (
           <TabInferior
             key={p.vista}
             icon={p.icon}
@@ -112,7 +121,7 @@ function NavbarAutenticado({
         <TabInferior
           icon="☰"
           label="Menú"
-          activo={menuAbierto}
+          activo={menuAbierto || vista === "tareas" || vista === "deudas"}
           aria-expanded={menuAbierto}
           onClick={() => setMenuAbierto(!menuAbierto)}
         />
@@ -153,6 +162,31 @@ function NavbarAutenticado({
                 Salir
               </button>
             </div>
+
+            {tareasDeudasActivado && (
+              <div className="mb-2 pb-2 border-b border-sand">
+                <p className="text-xs text-ink/40 px-1.5 pb-1">Privado</p>
+                <button
+                  onClick={() => {
+                    irA("tareas");
+                    setMenuAbierto(false);
+                  }}
+                  className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition text-ink"
+                >
+                  ✅ Tareas
+                </button>
+                <button
+                  onClick={() => {
+                    irA("deudas");
+                    setMenuAbierto(false);
+                  }}
+                  className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition text-ink"
+                >
+                  💶 Deudas
+                </button>
+              </div>
+            )}
+
             <ContenidoAjustes onAccion={() => setMenuAbierto(false)} />
           </div>
         </>
@@ -196,16 +230,15 @@ function TabInferior({
   "aria-expanded"?: boolean;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 min-w-0 text-[11px] font-medium transition ${
-        activo ? "text-sagedark" : "text-ink/50"
-      }`}
-      {...rest}
-    >
-      <span className="text-lg leading-none">{icon}</span>
-      <span className="truncate max-w-full">{label}</span>
+    <button type="button" onClick={onClick} className="flex-1 flex justify-center py-1.5 min-w-0" {...rest}>
+      <span
+        className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-2xl max-w-full text-[11px] font-medium transition ${
+          activo ? "bg-sage/15 text-sagedark" : "text-ink/50"
+        }`}
+      >
+        <span className="text-lg leading-none">{icon}</span>
+        <span className="truncate max-w-full">{label}</span>
+      </span>
     </button>
   );
 }
