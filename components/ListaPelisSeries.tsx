@@ -16,10 +16,13 @@ import { usePoll } from "@/lib/use-poll";
 import AsignadoBadge from "./AsignadoBadge";
 import TipoContenidoBadge from "./TipoContenidoBadge";
 import PlataformaEditable from "./PlataformaEditable";
+import PlataformaIndicador from "./PlataformaIndicador";
 import NotaEditable from "./NotaEditable";
+import NotaIndicador from "./NotaIndicador";
 import NombreEditable from "./NombreEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
 import ColumnaDesplegable from "./ColumnaDesplegable";
+import MenuAccionesItem from "./MenuAccionesItem";
 
 // Tailwind necesita las clases completas y estáticas en el código para
 // detectarlas al compilar — de ahí el mapa en vez de construir el nombre
@@ -163,56 +166,82 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                   {(item) => (
                     <FilaOrdenable key={item.id} id={item.id} className="px-3 py-2">
                       {({ asaProps }) => (
-                        <>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <AsaArrastre asaProps={asaProps} />
-                            <AsignadoBadge
-                              usuarios={usuarios}
-                              asignadoAId={item.asignadoAId}
-                              onChange={(id) => asignar(item, id)}
-                            />
-                            <TipoContenidoBadge
-                              tipo={item.tipoContenido ?? "PELICULA"}
-                              onChange={(t) => cambiarTipoContenido(item, t)}
-                            />
-                            <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
-                              {(texto) => (
-                                <span className={`flex-1 ${vista ? "line-through text-emerald-600/70" : ""}`}>
-                                  {texto}
-                                </span>
-                              )}
-                            </NombreEditable>
-                            <PlataformaEditable
-                              plataforma={item.plataforma}
-                              onChange={(p) => cambiarPlataforma(item, p)}
-                            />
-                            {vista && (
-                              <NotaEditable nota={item.nota} onChange={(n) => cambiarNota(item, n)} />
+                        <div className="flex flex-wrap items-center gap-2">
+                          <AsaArrastre asaProps={asaProps} />
+                          <AsignadoBadge
+                            usuarios={usuarios}
+                            asignadoAId={item.asignadoAId}
+                            onChange={(id) => asignar(item, id)}
+                          />
+                          <TipoContenidoBadge
+                            tipo={item.tipoContenido ?? "PELICULA"}
+                            onChange={(t) => cambiarTipoContenido(item, t)}
+                          />
+                          <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
+                            {(texto) => (
+                              <span className={`flex-1 ${vista ? "line-through text-emerald-600/70" : ""}`}>
+                                {texto}
+                              </span>
                             )}
-                            <button
-                              onClick={() => eliminar(item.id)}
-                              aria-label="Eliminar"
-                              className="text-ink/30 hover:text-clay transition px-1"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
-                              <button
-                                key={c.estado}
-                                onClick={() => mover(item, c.estado)}
-                                className={`text-xs rounded px-1.5 py-0.5 border transition ${
-                                  c.estado === "HECHO"
-                                    ? "border-emerald-600/40 text-emerald-600 hover:bg-emerald-600 hover:text-white"
-                                    : "border-sand text-ink/50 hover:border-sage hover:text-sagedark"
-                                }`}
-                              >
-                                → {c.label}
-                              </button>
-                            ))}
-                          </div>
-                        </>
+                          </NombreEditable>
+                          {item.plataforma && <PlataformaIndicador plataforma={item.plataforma} />}
+                          {vista && item.nota && <NotaIndicador nota={item.nota} />}
+                          <MenuAccionesItem>
+                            {(cerrar) => {
+                              const creador = usuarios.find((u) => u.id === item.creadoPorId);
+                              return (
+                                <>
+                                  {creador && (
+                                    <p className="text-[11px] text-ink/40 px-1.5 pb-1.5">
+                                      Añadido por {creador.name?.split(" ")[0] ?? creador.email}
+                                    </p>
+                                  )}
+
+                                  <p className="text-xs text-ink/40 px-1.5 pb-1">Plataforma</p>
+                                  <div className="px-1.5 pb-2">
+                                    <PlataformaEditable
+                                      plataforma={item.plataforma}
+                                      onChange={(p) => cambiarPlataforma(item, p)}
+                                    />
+                                  </div>
+
+                                  {vista && (
+                                    <>
+                                      <p className="text-xs text-ink/40 px-1.5 pb-1">Nota</p>
+                                      <div className="px-1.5 pb-2">
+                                        <NotaEditable nota={item.nota} onChange={(n) => cambiarNota(item, n)} />
+                                      </div>
+                                    </>
+                                  )}
+
+                                  <div className="border-t border-sand my-1" />
+                                  <p className="text-xs text-ink/40 px-1.5 pb-1">Mover a</p>
+                                  {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
+                                    <button
+                                      key={c.estado}
+                                      onClick={() => {
+                                        mover(item, c.estado);
+                                        cerrar();
+                                      }}
+                                      className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition ${
+                                        c.estado === "HECHO" ? "text-emerald-600" : "text-ink"
+                                      }`}
+                                    >
+                                      → {c.label}
+                                    </button>
+                                  ))}
+                                </>
+                              );
+                            }}
+                          </MenuAccionesItem>
+                          <button
+                            onClick={() => eliminar(item.id)}
+                            aria-label="Eliminar"
+                            className="text-ink/30 hover:text-clay transition px-1"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       )}
                     </FilaOrdenable>
                   )}
