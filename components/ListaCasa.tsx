@@ -161,93 +161,98 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {COLUMNAS.map((cat) => {
           const comprado = cat.estado === "COMPRADO";
-          const itemsColumna = items
-            .filter((i) => i.estado === cat.estado)
-            .sort((a, b) => a.orden - b.orden);
+          // "Comprado/Hecho" va alfabético (y sin arrastre manual, que ya no
+          // tendría efecto) igual que en Compra — encontrar un nombre importa
+          // más que el orden en que se fue marcando.
+          const itemsColumna = comprado
+            ? items
+                .filter((i) => i.estado === cat.estado)
+                .sort((a, b) => a.texto.localeCompare(b.texto, "es", { sensitivity: "base" }))
+            : items.filter((i) => i.estado === cat.estado).sort((a, b) => a.orden - b.orden);
+
+          const fila = (item: Item, asaProps?: React.HTMLAttributes<HTMLElement>) => (
+            <div className="flex flex-wrap items-center gap-2">
+              {asaProps && <AsaArrastre asaProps={asaProps} />}
+              <AsignadoBadge
+                usuarios={usuarios}
+                asignadoAId={item.asignadoAId}
+                onChange={(id) => asignar(item, id)}
+              />
+              <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
+                {(texto) => (
+                  <span className={`flex-1 ${comprado ? "line-through text-emerald-600/70" : ""}`}>{texto}</span>
+                )}
+              </NombreEditable>
+              {item.cantidad > 1 && (
+                <span className="shrink-0 text-xs font-semibold text-clay">×{item.cantidad}</span>
+              )}
+              {item.enlace && <EnlaceIndicador enlace={item.enlace} />}
+              <MenuAccionesItem>
+                {(cerrar) => {
+                  const creador = usuarios.find((u) => u.id === item.creadoPorId);
+                  return (
+                    <>
+                      {creador && (
+                        <p className="text-[11px] text-ink/40 px-1.5 pb-1.5">
+                          Añadido por {creador.name?.split(" ")[0] ?? creador.email}
+                        </p>
+                      )}
+
+                      <p className="text-xs text-ink/40 px-1.5 pb-1">Cantidad</p>
+                      <div className="px-1.5 pb-2">
+                        <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
+                      </div>
+
+                      <div className="border-t border-sand mb-1" />
+                      <EnlaceCasa enlace={item.enlace} onChange={(url) => cambiarEnlace(item, url)} cerrar={cerrar} />
+
+                      <div className="border-t border-sand my-1" />
+                      <p className="text-xs text-ink/40 px-1.5 pb-1">Mover a</p>
+                      {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
+                        <button
+                          key={c.estado}
+                          onClick={() => {
+                            mover(item, c.estado);
+                            cerrar();
+                          }}
+                          className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition ${
+                            c.estado === "COMPRADO" ? "text-emerald-600" : "text-ink"
+                          }`}
+                        >
+                          → {c.label}
+                        </button>
+                      ))}
+                    </>
+                  );
+                }}
+              </MenuAccionesItem>
+              <button
+                onClick={() => eliminar(item.id)}
+                aria-label="Eliminar"
+                className="text-ink/30 hover:text-clay transition px-1"
+              >
+                ✕
+              </button>
+            </div>
+          );
+
           return (
             <ColumnaDesplegable key={cat.estado} titulo={cat.label} count={itemsColumna.length} colorClass={cat.textClass}>
               {itemsColumna.length === 0 ? (
                 <p className="text-ink/40 text-sm italic">Nada por aquí</p>
+              ) : comprado ? (
+                <ul className="card divide-y divide-sand">
+                  {itemsColumna.map((item) => (
+                    <li key={item.id} className="px-3 py-2">
+                      {fila(item)}
+                    </li>
+                  ))}
+                </ul>
               ) : (
                 <ListaOrdenable items={itemsColumna} onReordenar={reordenar} className="card divide-y divide-sand">
                   {(item) => (
                     <FilaOrdenable key={item.id} id={item.id} className="px-3 py-2">
-                      {({ asaProps }) => (
-                        <>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <AsaArrastre asaProps={asaProps} />
-                            <AsignadoBadge
-                              usuarios={usuarios}
-                              asignadoAId={item.asignadoAId}
-                              onChange={(id) => asignar(item, id)}
-                            />
-                            <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
-                              {(texto) => (
-                                <span className={`flex-1 ${comprado ? "line-through text-emerald-600/70" : ""}`}>
-                                  {texto}
-                                </span>
-                              )}
-                            </NombreEditable>
-                            {item.cantidad > 1 && (
-                              <span className="shrink-0 text-xs font-semibold text-clay">×{item.cantidad}</span>
-                            )}
-                            {item.enlace && <EnlaceIndicador enlace={item.enlace} />}
-                            <MenuAccionesItem>
-                              {(cerrar) => {
-                                const creador = usuarios.find((u) => u.id === item.creadoPorId);
-                                return (
-                                  <>
-                                    {creador && (
-                                      <p className="text-[11px] text-ink/40 px-1.5 pb-1.5">
-                                        Añadido por {creador.name?.split(" ")[0] ?? creador.email}
-                                      </p>
-                                    )}
-
-                                    <p className="text-xs text-ink/40 px-1.5 pb-1">Cantidad</p>
-                                    <div className="px-1.5 pb-2">
-                                      <CantidadStepper
-                                        cantidad={item.cantidad}
-                                        onChange={(n) => cambiarCantidad(item, n)}
-                                      />
-                                    </div>
-
-                                    <div className="border-t border-sand mb-1" />
-                                    <EnlaceCasa
-                                      enlace={item.enlace}
-                                      onChange={(url) => cambiarEnlace(item, url)}
-                                      cerrar={cerrar}
-                                    />
-
-                                    <div className="border-t border-sand my-1" />
-                                    <p className="text-xs text-ink/40 px-1.5 pb-1">Mover a</p>
-                                    {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
-                                      <button
-                                        key={c.estado}
-                                        onClick={() => {
-                                          mover(item, c.estado);
-                                          cerrar();
-                                        }}
-                                        className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition ${
-                                          c.estado === "COMPRADO" ? "text-emerald-600" : "text-ink"
-                                        }`}
-                                      >
-                                        → {c.label}
-                                      </button>
-                                    ))}
-                                  </>
-                                );
-                              }}
-                            </MenuAccionesItem>
-                            <button
-                              onClick={() => eliminar(item.id)}
-                              aria-label="Eliminar"
-                              className="text-ink/30 hover:text-clay transition px-1"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </>
-                      )}
+                      {({ asaProps }) => fila(item, asaProps)}
                     </FilaOrdenable>
                   )}
                 </ListaOrdenable>

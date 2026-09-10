@@ -16,7 +16,10 @@ export default function ListaTareas() {
   const [enviando, setEnviando] = useState(false);
 
   const pendientes = items.filter((i) => i.estado === "PENDIENTE").sort((a, b) => a.orden - b.orden);
-  const hechas = items.filter((i) => i.estado === "HECHO").sort((a, b) => a.orden - b.orden);
+  // "Hecho" va alfabético (y sin arrastre manual) igual que en Compra/Casa.
+  const hechas = items
+    .filter((i) => i.estado === "HECHO")
+    .sort((a, b) => a.texto.localeCompare(b.texto, "es", { sensitivity: "base" }));
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -103,6 +106,7 @@ export default function ListaTareas() {
           onEliminar={eliminar}
           onReordenar={reordenar}
           tachado
+          ordenable={false}
         />
       </div>
     </div>
@@ -119,6 +123,7 @@ function Columna({
   onEliminar,
   onReordenar,
   tachado,
+  ordenable = true,
 }: {
   titulo: string;
   items: Item[];
@@ -129,45 +134,56 @@ function Columna({
   onEliminar: (id: string) => void;
   onReordenar: (itemsReordenados: Item[]) => void;
   tachado: boolean;
+  // false para columnas con orden fijo (p. ej. "Hecho", alfabético) donde
+  // arrastrar para reordenar no tendría ningún efecto visible.
+  ordenable?: boolean;
 }) {
+  function fila(item: Item, asaProps?: React.HTMLAttributes<HTMLElement>) {
+    return (
+      <>
+        {asaProps && <AsaArrastre asaProps={asaProps} />}
+        <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
+          {(texto) => (
+            <button
+              onClick={() => onToggle(item)}
+              className={`flex-1 text-left ${tachado ? "line-through text-emerald-600/70" : "text-ink"}`}
+            >
+              {texto}
+            </button>
+          )}
+        </NombreEditable>
+        <FechaEditable fecha={item.fecha} onChange={(f) => onCambiarFecha(item, f)} etiquetaVacio="+ fecha" />
+        <button
+          onClick={() => onEliminar(item.id)}
+          aria-label="Eliminar"
+          className="text-ink/30 hover:text-clay transition px-1"
+        >
+          ✕
+        </button>
+      </>
+    );
+  }
+
   return (
     <ColumnaDesplegable titulo={titulo} count={items.length} colorClass={tachado ? "text-emerald-600" : "text-sagedark"}>
       {items.length === 0 ? (
         <p className="text-ink/40 text-sm italic">{vacio}</p>
-      ) : (
+      ) : ordenable ? (
         <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand">
           {(item) => (
             <FilaOrdenable key={item.id} id={item.id} className="flex items-center gap-2 px-3 py-2">
-              {({ asaProps }) => (
-                <>
-                  <AsaArrastre asaProps={asaProps} />
-                  <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
-                    {(texto) => (
-                      <button
-                        onClick={() => onToggle(item)}
-                        className={`flex-1 text-left ${tachado ? "line-through text-emerald-600/70" : "text-ink"}`}
-                      >
-                        {texto}
-                      </button>
-                    )}
-                  </NombreEditable>
-                  <FechaEditable
-                    fecha={item.fecha}
-                    onChange={(f) => onCambiarFecha(item, f)}
-                    etiquetaVacio="+ fecha"
-                  />
-                  <button
-                    onClick={() => onEliminar(item.id)}
-                    aria-label="Eliminar"
-                    className="text-ink/30 hover:text-clay transition px-1"
-                  >
-                    ✕
-                  </button>
-                </>
-              )}
+              {({ asaProps }) => fila(item, asaProps)}
             </FilaOrdenable>
           )}
         </ListaOrdenable>
+      ) : (
+        <ul className="card divide-y divide-sand">
+          {items.map((item) => (
+            <li key={item.id} className="flex items-center gap-2 px-3 py-2">
+              {fila(item)}
+            </li>
+          ))}
+        </ul>
       )}
     </ColumnaDesplegable>
   );
