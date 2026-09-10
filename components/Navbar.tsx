@@ -164,8 +164,10 @@ function NavbarAutenticado({
               </button>
             </div>
 
+            <ContenidoAjustes onAccion={() => setMenuAbierto(false)} />
+
             {tareasDeudasActivado && (
-              <div className="mb-2 pb-2 border-b border-sand">
+              <div className="mt-2 pt-2 border-t border-sand">
                 <p className="text-xs text-ink/40 px-1.5 pb-1">Privado</p>
                 <button
                   onClick={() => {
@@ -187,8 +189,6 @@ function NavbarAutenticado({
                 </button>
               </div>
             )}
-
-            <ContenidoAjustes onAccion={() => setMenuAbierto(false)} />
           </div>
         </>
       )}
