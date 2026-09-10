@@ -128,17 +128,16 @@ function NavbarAutenticado({
         />
       </nav>
 
+      {/* Menú como tarjeta flotante centrada, con margen por los cuatro
+          lados y fondo atenuado detrás — no un panel pegado a un borde. */}
       {menuAbierto && (
-        <>
-          <button
-            type="button"
-            aria-label="Cerrar menú"
-            className="md:hidden fixed inset-0 z-30 bg-ink/20"
-            onClick={() => setMenuAbierto(false)}
-          />
+        <div
+          className="md:hidden fixed inset-0 z-40 flex items-center justify-center p-6 bg-ink/30"
+          onClick={() => setMenuAbierto(false)}
+        >
           <div
-            className="md:hidden fixed left-3 right-3 z-40 bg-white border border-sand rounded-2xl shadow-lg p-3 max-h-[70vh] overflow-y-auto"
-            style={{ bottom: "calc(4.75rem + env(safe-area-inset-bottom))" }}
+            className="w-full max-w-sm max-h-[75vh] overflow-y-auto bg-white rounded-2xl shadow-xl p-3"
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between pb-3 mb-2 border-b border-sand px-1">
               <div className="flex items-center gap-2 min-w-0">
@@ -190,7 +189,7 @@ function NavbarAutenticado({
               </div>
             )}
           </div>
-        </>
+        </div>
       )}
     </>
   );
