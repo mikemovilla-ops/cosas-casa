@@ -156,93 +156,109 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
       <div className="grid sm:grid-cols-3 gap-6">
         {COLUMNAS.map((cat) => {
           const vista = cat.estado === "HECHO";
-          const itemsColumna = items.filter((i) => i.estado === cat.estado).sort((a, b) => a.orden - b.orden);
+          // "Vista" va alfabética (y sin arrastre manual) igual que en
+          // Compra/Casa — encontrar un título importa más que el orden en
+          // que se fue viendo.
+          const itemsColumna = vista
+            ? items
+                .filter((i) => i.estado === cat.estado)
+                .sort((a, b) => a.texto.localeCompare(b.texto, "es", { sensitivity: "base" }))
+            : items.filter((i) => i.estado === cat.estado).sort((a, b) => a.orden - b.orden);
+
+          const fila = (item: Item, asaProps?: React.HTMLAttributes<HTMLElement>) => (
+            <div className="flex flex-wrap items-center gap-2">
+              {asaProps && <AsaArrastre asaProps={asaProps} />}
+              <AsignadoBadge
+                usuarios={usuarios}
+                asignadoAId={item.asignadoAId}
+                onChange={(id) => asignar(item, id)}
+              />
+              <TipoContenidoBadge
+                tipo={item.tipoContenido ?? "PELICULA"}
+                onChange={(t) => cambiarTipoContenido(item, t)}
+              />
+              <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
+                {(texto) => (
+                  <span className={`flex-1 ${vista ? "line-through text-emerald-600/70" : ""}`}>{texto}</span>
+                )}
+              </NombreEditable>
+              {item.plataforma && <PlataformaIndicador plataforma={item.plataforma} />}
+              {vista && item.nota && <NotaIndicador nota={item.nota} />}
+              <MenuAccionesItem>
+                {(cerrar) => {
+                  const creador = usuarios.find((u) => u.id === item.creadoPorId);
+                  return (
+                    <>
+                      {creador && (
+                        <p className="text-[11px] text-ink/40 px-1.5 pb-1.5">
+                          Añadido por {creador.name?.split(" ")[0] ?? creador.email}
+                        </p>
+                      )}
+
+                      <p className="text-xs text-ink/40 px-1.5 pb-1">Plataforma</p>
+                      <div className="px-1.5 pb-2">
+                        <PlataformaEditable
+                          plataforma={item.plataforma}
+                          onChange={(p) => cambiarPlataforma(item, p)}
+                        />
+                      </div>
+
+                      {vista && (
+                        <>
+                          <p className="text-xs text-ink/40 px-1.5 pb-1">Nota</p>
+                          <div className="px-1.5 pb-2">
+                            <NotaEditable nota={item.nota} onChange={(n) => cambiarNota(item, n)} />
+                          </div>
+                        </>
+                      )}
+
+                      <div className="border-t border-sand my-1" />
+                      <p className="text-xs text-ink/40 px-1.5 pb-1">Mover a</p>
+                      {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
+                        <button
+                          key={c.estado}
+                          onClick={() => {
+                            mover(item, c.estado);
+                            cerrar();
+                          }}
+                          className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition ${
+                            c.estado === "HECHO" ? "text-emerald-600" : "text-ink"
+                          }`}
+                        >
+                          → {c.label}
+                        </button>
+                      ))}
+                    </>
+                  );
+                }}
+              </MenuAccionesItem>
+              <button
+                onClick={() => eliminar(item.id)}
+                aria-label="Eliminar"
+                className="text-ink/30 hover:text-clay transition px-1"
+              >
+                ✕
+              </button>
+            </div>
+          );
+
           return (
             <ColumnaDesplegable key={cat.estado} titulo={cat.label} count={itemsColumna.length} colorClass={cat.textClass}>
               {itemsColumna.length === 0 ? (
                 <p className="text-ink/40 text-sm italic">Nada por aquí</p>
+              ) : vista ? (
+                <ul className="card divide-y divide-sand">
+                  {itemsColumna.map((item) => (
+                    <li key={item.id} className="px-3 py-2">
+                      {fila(item)}
+                    </li>
+                  ))}
+                </ul>
               ) : (
                 <ListaOrdenable items={itemsColumna} onReordenar={reordenar} className="card divide-y divide-sand">
                   {(item) => (
                     <FilaOrdenable key={item.id} id={item.id} className="px-3 py-2">
-                      {({ asaProps }) => (
-                        <div className="flex flex-wrap items-center gap-2">
-                          <AsaArrastre asaProps={asaProps} />
-                          <AsignadoBadge
-                            usuarios={usuarios}
-                            asignadoAId={item.asignadoAId}
-                            onChange={(id) => asignar(item, id)}
-                          />
-                          <TipoContenidoBadge
-                            tipo={item.tipoContenido ?? "PELICULA"}
-                            onChange={(t) => cambiarTipoContenido(item, t)}
-                          />
-                          <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
-                            {(texto) => (
-                              <span className={`flex-1 ${vista ? "line-through text-emerald-600/70" : ""}`}>
-                                {texto}
-                              </span>
-                            )}
-                          </NombreEditable>
-                          {item.plataforma && <PlataformaIndicador plataforma={item.plataforma} />}
-                          {vista && item.nota && <NotaIndicador nota={item.nota} />}
-                          <MenuAccionesItem>
-                            {(cerrar) => {
-                              const creador = usuarios.find((u) => u.id === item.creadoPorId);
-                              return (
-                                <>
-                                  {creador && (
-                                    <p className="text-[11px] text-ink/40 px-1.5 pb-1.5">
-                                      Añadido por {creador.name?.split(" ")[0] ?? creador.email}
-                                    </p>
-                                  )}
-
-                                  <p className="text-xs text-ink/40 px-1.5 pb-1">Plataforma</p>
-                                  <div className="px-1.5 pb-2">
-                                    <PlataformaEditable
-                                      plataforma={item.plataforma}
-                                      onChange={(p) => cambiarPlataforma(item, p)}
-                                    />
-                                  </div>
-
-                                  {vista && (
-                                    <>
-                                      <p className="text-xs text-ink/40 px-1.5 pb-1">Nota</p>
-                                      <div className="px-1.5 pb-2">
-                                        <NotaEditable nota={item.nota} onChange={(n) => cambiarNota(item, n)} />
-                                      </div>
-                                    </>
-                                  )}
-
-                                  <div className="border-t border-sand my-1" />
-                                  <p className="text-xs text-ink/40 px-1.5 pb-1">Mover a</p>
-                                  {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
-                                    <button
-                                      key={c.estado}
-                                      onClick={() => {
-                                        mover(item, c.estado);
-                                        cerrar();
-                                      }}
-                                      className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition ${
-                                        c.estado === "HECHO" ? "text-emerald-600" : "text-ink"
-                                      }`}
-                                    >
-                                      → {c.label}
-                                    </button>
-                                  ))}
-                                </>
-                              );
-                            }}
-                          </MenuAccionesItem>
-                          <button
-                            onClick={() => eliminar(item.id)}
-                            aria-label="Eliminar"
-                            className="text-ink/30 hover:text-clay transition px-1"
-                          >
-                            ✕
-                          </button>
-                        </div>
-                      )}
+                      {({ asaProps }) => fila(item, asaProps)}
                     </FilaOrdenable>
                   )}
                 </ListaOrdenable>
