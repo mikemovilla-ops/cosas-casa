@@ -107,8 +107,8 @@ function NavbarAutenticado({
           compartidas + 2 personales + Menú no cabían sin recortar el texto —
           sino dentro de la hoja de "Menú". */}
       <nav
-        className="md:hidden fixed left-3 right-3 z-30 flex items-stretch bg-white border border-sand rounded-2xl shadow-lg"
-        style={{ bottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+        className="md:hidden fixed left-5 right-5 z-30 flex items-stretch bg-white rounded-full shadow-2xl shadow-ink/20"
+        style={{ bottom: "calc(1.25rem + env(safe-area-inset-bottom))" }}
       >
         {PESTANAS.map((p) => (
           <TabInferior
