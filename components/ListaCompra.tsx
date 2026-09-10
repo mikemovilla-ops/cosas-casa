@@ -25,7 +25,12 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
   const [enviando, setEnviando] = useState(false);
 
   const aComprar = items.filter((i) => i.estado === "A_COMPRAR").sort((a, b) => a.orden - b.orden);
-  const comprado = items.filter((i) => i.estado === "COMPRADO").sort((a, b) => a.orden - b.orden);
+  // "Comprado" va alfabético en vez de por orden manual — con la compra ya
+  // hecha, lo útil es poder encontrar rápido un nombre, no el orden en que
+  // se marcaron.
+  const comprado = items
+    .filter((i) => i.estado === "COMPRADO")
+    .sort((a, b) => a.texto.localeCompare(b.texto, "es", { sensitivity: "base" }));
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -143,6 +148,7 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
           onEliminar={eliminar}
           onReordenar={reordenar}
           tachado
+          ordenable={false}
         />
       </div>
     </div>
@@ -161,6 +167,7 @@ function Columna({
   onEliminar,
   onReordenar,
   tachado,
+  ordenable = true,
 }: {
   titulo: string;
   items: Item[];
@@ -173,46 +180,57 @@ function Columna({
   onEliminar: (id: string) => void;
   onReordenar: (itemsReordenados: Item[]) => void;
   tachado: boolean;
+  // false para columnas con orden fijo (p. ej. "Comprado", alfabético) donde
+  // arrastrar para reordenar no tendría ningún efecto visible.
+  ordenable?: boolean;
 }) {
+  function fila(item: Item, asaProps?: React.HTMLAttributes<HTMLElement>) {
+    return (
+      <>
+        {asaProps && <AsaArrastre asaProps={asaProps} />}
+        <AsignadoBadge usuarios={usuarios} asignadoAId={item.asignadoAId} onChange={(id) => onAsignar(item, id)} />
+        <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
+          {(texto) => (
+            <button
+              onClick={() => onToggle(item)}
+              className={`flex-1 text-left ${tachado ? "line-through text-ink/40" : "text-ink"}`}
+            >
+              {texto}
+            </button>
+          )}
+        </NombreEditable>
+        <CantidadStepper cantidad={item.cantidad} onChange={(n) => onCantidad(item, n)} />
+        <button
+          onClick={() => onEliminar(item.id)}
+          aria-label="Eliminar"
+          className="text-ink/30 hover:text-clay transition px-1"
+        >
+          ✕
+        </button>
+      </>
+    );
+  }
+
   return (
     <ColumnaDesplegable titulo={titulo} count={items.length}>
       {items.length === 0 ? (
         <p className="text-ink/40 text-sm italic">{vacio}</p>
-      ) : (
+      ) : ordenable ? (
         <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand">
           {(item) => (
             <FilaOrdenable key={item.id} id={item.id} className="flex items-center gap-2 px-3 py-2">
-              {({ asaProps }) => (
-                <>
-                  <AsaArrastre asaProps={asaProps} />
-                  <AsignadoBadge
-                    usuarios={usuarios}
-                    asignadoAId={item.asignadoAId}
-                    onChange={(id) => onAsignar(item, id)}
-                  />
-                  <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
-                    {(texto) => (
-                      <button
-                        onClick={() => onToggle(item)}
-                        className={`flex-1 text-left ${tachado ? "line-through text-ink/40" : "text-ink"}`}
-                      >
-                        {texto}
-                      </button>
-                    )}
-                  </NombreEditable>
-                  <CantidadStepper cantidad={item.cantidad} onChange={(n) => onCantidad(item, n)} />
-                  <button
-                    onClick={() => onEliminar(item.id)}
-                    aria-label="Eliminar"
-                    className="text-ink/30 hover:text-clay transition px-1"
-                  >
-                    ✕
-                  </button>
-                </>
-              )}
+              {({ asaProps }) => fila(item, asaProps)}
             </FilaOrdenable>
           )}
         </ListaOrdenable>
+      ) : (
+        <ul className="card divide-y divide-sand">
+          {items.map((item) => (
+            <li key={item.id} className="flex items-center gap-2 px-3 py-2">
+              {fila(item)}
+            </li>
+          ))}
+        </ul>
       )}
     </ColumnaDesplegable>
   );
