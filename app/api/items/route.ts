@@ -83,6 +83,11 @@ export async function POST(request: Request) {
     plataforma = typeof body.plataforma === "string" && body.plataforma.trim() ? body.plataforma.trim() : null;
   }
 
+  let tipoCocina: string | null = null;
+  if (tipo === "RESTAURANTE") {
+    tipoCocina = typeof body.tipoCocina === "string" && body.tipoCocina.trim() ? body.tipoCocina.trim() : null;
+  }
+
   const item = await prisma.item.create({
     data: {
       tipo,
@@ -96,6 +101,7 @@ export async function POST(request: Request) {
       fecha,
       tipoContenido,
       plataforma,
+      tipoCocina,
       orden: Date.now(),
     },
   });
