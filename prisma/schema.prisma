@@ -124,6 +124,9 @@ model Item {
   // encuentra (texto libre: Netflix, HBO Max, Filmin...).
   tipoContenido TipoContenido?
   plataforma    String?
+  // Solo para RESTAURANTE: tipo de cocina (texto libre: chino, japonés,
+  // hamburguesas...).
+  tipoCocina    String?
   // Nota de 1 a 10 una vez vista/visitado (PELISERIE y RESTAURANTE, solo
   // tiene sentido con estado HECHO).
   nota          Int?

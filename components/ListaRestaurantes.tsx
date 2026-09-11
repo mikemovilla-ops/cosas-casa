@@ -14,12 +14,14 @@ import { usePoll } from "@/lib/use-poll";
 import AsignadoBadge from "./AsignadoBadge";
 import NombreEditable from "./NombreEditable";
 import NotaEditable from "./NotaEditable";
+import TipoCocinaEditable from "./TipoCocinaEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
 import ColumnaDesplegable from "./ColumnaDesplegable";
 
 export default function ListaRestaurantes({ usuarios }: { usuarios: Usuario[] }) {
   const { items, setItems, reload } = usePoll<Item>(() => fetchItems("RESTAURANTE"));
   const [texto, setTexto] = useState("");
+  const [tipoCocina, setTipoCocina] = useState("");
   const [asignadoAId, setAsignadoAId] = useState("");
   const [enviando, setEnviando] = useState(false);
 
@@ -37,8 +39,12 @@ export default function ListaRestaurantes({ usuarios }: { usuarios: Usuario[] })
     setEnviando(true);
     setTexto("");
     try {
-      const nuevo = await crearItem("RESTAURANTE", valor, { asignadoAId: asignadoAId || null });
+      const nuevo = await crearItem("RESTAURANTE", valor, {
+        tipoCocina: tipoCocina.trim() || undefined,
+        asignadoAId: asignadoAId || null,
+      });
       setItems((prev) => [...prev, nuevo]);
+      setTipoCocina("");
     } finally {
       setEnviando(false);
     }
@@ -69,6 +75,12 @@ export default function ListaRestaurantes({ usuarios }: { usuarios: Usuario[] })
     reload();
   }
 
+  async function cambiarTipoCocina(item: Item, nuevoTipoCocina: string | null) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, tipoCocina: nuevoTipoCocina } : i)));
+    await actualizarItem(item.id, { tipoCocina: nuevoTipoCocina });
+    reload();
+  }
+
   async function eliminar(id: string) {
     setItems((prev) => prev.filter((i) => i.id !== id));
     await eliminarItem(id);
@@ -89,6 +101,12 @@ export default function ListaRestaurantes({ usuarios }: { usuarios: Usuario[] })
           onChange={(e) => setTexto(e.target.value)}
           placeholder="¿Qué restaurante?"
           className="flex-1 min-w-[10rem] rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+        />
+        <input
+          value={tipoCocina}
+          onChange={(e) => setTipoCocina(e.target.value)}
+          placeholder="Tipo de cocina (opcional)"
+          className="w-44 rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
         />
         <select
           value={asignadoAId}
@@ -122,6 +140,7 @@ export default function ListaRestaurantes({ usuarios }: { usuarios: Usuario[] })
           onAsignar={asignar}
           onRenombrar={renombrar}
           onNota={cambiarNota}
+          onTipoCocina={cambiarTipoCocina}
           onEliminar={eliminar}
           onReordenar={reordenar}
         />
@@ -135,6 +154,7 @@ export default function ListaRestaurantes({ usuarios }: { usuarios: Usuario[] })
           onAsignar={asignar}
           onRenombrar={renombrar}
           onNota={cambiarNota}
+          onTipoCocina={cambiarTipoCocina}
           onEliminar={eliminar}
           onReordenar={reordenar}
           ordenable={false}
@@ -154,6 +174,7 @@ function Columna({
   onAsignar,
   onRenombrar,
   onNota,
+  onTipoCocina,
   onEliminar,
   onReordenar,
   ordenable = true,
@@ -167,6 +188,7 @@ function Columna({
   onAsignar: (item: Item, asignadoAId: string | null) => void;
   onRenombrar: (item: Item, texto: string) => void;
   onNota: (item: Item, nota: number | null) => void;
+  onTipoCocina: (item: Item, tipoCocina: string | null) => void;
   onEliminar: (id: string) => void;
   onReordenar: (itemsReordenados: Item[]) => void;
   // false para columnas con orden fijo (p. ej. "Hemos ido", alfabético)
@@ -188,6 +210,7 @@ function Columna({
             </button>
           )}
         </NombreEditable>
+        <TipoCocinaEditable tipoCocina={item.tipoCocina} onChange={(t) => onTipoCocina(item, t)} />
         {vista && <NotaEditable nota={item.nota} onChange={(n) => onNota(item, n)} />}
         <button
           onClick={() => onEliminar(item.id)}

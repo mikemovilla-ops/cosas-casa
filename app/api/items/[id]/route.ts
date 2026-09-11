@@ -104,6 +104,13 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         : body.plataforma.trim();
   }
 
+  if ("tipoCocina" in body) {
+    data.tipoCocina =
+      body.tipoCocina === null || typeof body.tipoCocina !== "string" || !body.tipoCocina.trim()
+        ? null
+        : body.tipoCocina.trim();
+  }
+
   if ("nota" in body) {
     if (body.nota === null) {
       data.nota = null;

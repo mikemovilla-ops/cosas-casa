@@ -22,6 +22,7 @@ export type Item = {
   fecha: string | null;
   tipoContenido: TipoContenido | null;
   plataforma: string | null;
+  tipoCocina: string | null;
   nota: number | null;
   orden: number;
   createdAt: string;
@@ -78,6 +79,7 @@ export async function crearItem(
     fecha?: string;
     tipoContenido?: TipoContenido;
     plataforma?: string;
+    tipoCocina?: string;
   }
 ): Promise<Item> {
   const res = await fetch("/api/items", {
@@ -103,6 +105,7 @@ export async function actualizarItem(
     orden?: number;
     tipoContenido?: TipoContenido;
     plataforma?: string | null;
+    tipoCocina?: string | null;
     nota?: number | null;
   }
 ): Promise<Item> {
