@@ -72,3 +72,10 @@ export function notaValida(valor: unknown): number | null {
   const n = Number(valor);
   return Number.isInteger(n) && n >= 1 && n <= 10 ? n : null;
 }
+
+// Comentario libre de una reseña: recorta a 500 caracteres, null si viene
+// vacío (a diferencia de notaValida, aquí no hace falta distinguir
+// "inválido" de "vacío" — cualquier texto es válido).
+export function comentarioValido(valor: unknown): string | null {
+  return typeof valor === "string" && valor.trim() ? valor.trim().slice(0, 500) : null;
+}

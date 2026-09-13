@@ -26,8 +26,9 @@ model User {
 
   accounts       Account[]
   sessions       Session[]
-  itemsCreados   Item[] @relation("CreadoPor")
-  itemsAsignados Item[] @relation("AsignadoA")
+  itemsCreados   Item[]   @relation("CreadoPor")
+  itemsAsignados Item[]   @relation("AsignadoA")
+  resenas        Resena[]
 
   @@map("users")
 }
@@ -127,9 +128,12 @@ model Item {
   // Solo para RESTAURANTE: tipo de cocina (texto libre: chino, japonés,
   // hamburguesas...).
   tipoCocina    String?
-  // Nota de 1 a 10 una vez vista/visitado (PELISERIE y RESTAURANTE, solo
-  // tiene sentido con estado HECHO).
+  // Nota de 1 a 10 una vez vista, solo tiene sentido con estado HECHO. Ya
+  // no se usa para RESTAURANTE (ver modelo Resena: ahí cada persona pone la
+  // suya y se muestra la media) — se deja el campo por compatibilidad con
+  // los datos de PELISERIE existentes.
   nota          Int?
+  resenas       Resena[]
   // Orden manual (arrastrar y soltar). Los items nuevos arrancan en
   // Date.now() (siempre mayor que 0), así que los ya existentes —que se
   // quedan en el valor por defecto 0— ordenan primero por createdAt sin
@@ -149,4 +153,24 @@ model Item {
 
   @@index([tipo, estado])
   @@map("items")
+}
+
+// Valoración de UNA persona sobre UN restaurante visitado (RESTAURANTE): su
+// nota (1-10) y su comentario, ambos opcionales por separado (se puede
+// comentar sin puntuar o al revés). Lo que se ve en la lista es la media de
+// las notas de todas las reseñas de un item, y todos los comentarios
+// firmados con quién los puso.
+model Resena {
+  id         String   @id @default(cuid())
+  itemId     String
+  item       Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nota       Int?
+  comentario String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([itemId, userId])
+  @@map("resenas")
 }
