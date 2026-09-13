@@ -10,6 +10,14 @@ export type EstadoItem =
   | "EN_CURSO";
 export type TipoContenido = "PELICULA" | "SERIE";
 
+// Valoración de una persona sobre un RESTAURANTE (ver lib/items.ts). nota y
+// comentario son independientes: se puede comentar sin puntuar o al revés.
+export type Resena = {
+  userId: string;
+  nota: number | null;
+  comentario: string | null;
+};
+
 export type Item = {
   id: string;
   tipo: TipoLista;
@@ -24,6 +32,7 @@ export type Item = {
   plataforma: string | null;
   tipoCocina: string | null;
   nota: number | null;
+  resenas: Resena[];
   orden: number;
   createdAt: string;
   updatedAt: string;
@@ -115,6 +124,22 @@ export async function actualizarItem(
     body: JSON.stringify(cambios),
   });
   if (!res.ok) throw new Error("Error al actualizar el item");
+  return res.json();
+}
+
+// Guarda la reseña (nota y/o comentario) del usuario logueado sobre un
+// RESTAURANTE — siempre la suya, nunca la de otro (eso lo decide la sesión
+// en el servidor, no un userId aquí).
+export async function guardarResena(
+  itemId: string,
+  cambios: { nota?: number | null; comentario?: string | null }
+): Promise<Resena> {
+  const res = await fetch(`/api/items/${itemId}/resena`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cambios),
+  });
+  if (!res.ok) throw new Error("Error al guardar la reseña");
   return res.json();
 }
 

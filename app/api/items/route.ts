@@ -32,6 +32,9 @@ export async function GET(request: Request) {
   const items = await prisma.item.findMany({
     where,
     orderBy: [{ orden: "asc" }, { createdAt: "asc" }],
+    // Solo se usa para RESTAURANTE (ver Resena), pero el join es barato e
+    // incluirlo siempre evita tener que tipar dos formas distintas de Item.
+    include: { resenas: { select: { userId: true, nota: true, comentario: true } } },
   });
   return NextResponse.json(items);
 }
@@ -105,5 +108,7 @@ export async function POST(request: Request) {
       orden: Date.now(),
     },
   });
-  return NextResponse.json(item, { status: 201 });
+  // Un item recién creado nunca tiene reseñas todavía — se añade el campo a
+  // mano en vez de un include de por sí vacío, para no complicar la query.
+  return NextResponse.json({ ...item, resenas: [] }, { status: 201 });
 }
