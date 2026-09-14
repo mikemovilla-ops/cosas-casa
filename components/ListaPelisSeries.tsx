@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import {
   actualizarItem,
   crearItem,
   eliminarItem,
   fetchItems,
+  guardarResena,
   reordenarColumna,
   type EstadoItem,
   type Item,
@@ -17,8 +19,7 @@ import AsignadoBadge from "./AsignadoBadge";
 import TipoContenidoBadge from "./TipoContenidoBadge";
 import PlataformaEditable from "./PlataformaEditable";
 import PlataformaIndicador from "./PlataformaIndicador";
-import NotaEditable from "./NotaEditable";
-import NotaIndicador from "./NotaIndicador";
+import ComentarioEditable from "./ComentarioEditable";
 import NombreEditable from "./NombreEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
 import ColumnaDesplegable from "./ColumnaDesplegable";
@@ -33,7 +34,14 @@ const COLUMNAS: { estado: EstadoItem; label: string; textClass: string }[] = [
   { estado: "HECHO", label: "Vista ✓", textClass: "text-emerald-600" },
 ];
 
+function nombreCorto(usuarios: Usuario[], userId: string) {
+  const u = usuarios.find((u) => u.id === userId);
+  return u?.name?.split(" ")[0] ?? u?.email ?? "Alguien";
+}
+
 export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) {
+  const { data: session } = useSession();
+  const miUserId = session?.user?.id;
   const { items, setItems, reload } = usePoll<Item>(() => fetchItems("PELISERIE"));
   const [texto, setTexto] = useState("");
   const [tipoContenido, setTipoContenido] = useState<TipoContenido>("PELICULA");
@@ -91,9 +99,21 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
     reload();
   }
 
-  async function cambiarNota(item: Item, nuevaNota: number | null) {
-    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, nota: nuevaNota } : i)));
-    await actualizarItem(item.id, { nota: nuevaNota });
+  // Guarda TU reseña (nota y/o comentario) sobre una peli/serie vista —
+  // nunca la de la otra persona. Actualiza en local la tuya dentro de
+  // item.resenas (sustituyéndola si ya existía) para que la media se
+  // refleje al momento.
+  async function cambiarResena(item: Item, cambios: { nota?: number | null; comentario?: string | null }) {
+    if (!miUserId) return;
+    setItems((prev) =>
+      prev.map((i) => {
+        if (i.id !== item.id) return i;
+        const mia = i.resenas.find((r) => r.userId === miUserId);
+        const actualizada = { userId: miUserId, nota: mia?.nota ?? null, comentario: mia?.comentario ?? null, ...cambios };
+        return { ...i, resenas: [...i.resenas.filter((r) => r.userId !== miUserId), actualizada] };
+      })
+    );
+    await guardarResena(item.id, cambios);
     reload();
   }
 
@@ -165,7 +185,13 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                 .sort((a, b) => a.texto.localeCompare(b.texto, "es", { sensitivity: "base" }))
             : items.filter((i) => i.estado === cat.estado).sort((a, b) => a.orden - b.orden);
 
-          const fila = (item: Item, asaProps?: React.HTMLAttributes<HTMLElement>) => (
+          const fila = (item: Item, asaProps?: React.HTMLAttributes<HTMLElement>) => {
+            const notas = item.resenas.filter((r) => r.nota != null).map((r) => r.nota as number);
+            const media = notas.length ? notas.reduce((s, n) => s + n, 0) / notas.length : null;
+            const miResena = miUserId ? item.resenas.find((r) => r.userId === miUserId) : undefined;
+            const comentarios = item.resenas.filter((r) => r.comentario);
+
+            return (
             <div className="flex flex-wrap items-center gap-2">
               {asaProps && <AsaArrastre asaProps={asaProps} />}
               <AsignadoBadge
@@ -183,7 +209,11 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                 )}
               </NombreEditable>
               {item.plataforma && <PlataformaIndicador plataforma={item.plataforma} />}
-              {vista && item.nota && <NotaIndicador nota={item.nota} />}
+              {vista && media !== null && (
+                <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded-full border border-mustard/40 text-mustard bg-mustard/10">
+                  ⭐ {media.toFixed(1)}/10
+                </span>
+              )}
               <MenuAccionesItem>
                 {(cerrar) => {
                   const creador = usuarios.find((u) => u.id === item.creadoPorId);
@@ -205,10 +235,44 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
 
                       {vista && (
                         <>
-                          <p className="text-xs text-ink/40 px-1.5 pb-1">Nota</p>
+                          <p className="text-xs text-ink/40 px-1.5 pb-1">Tu nota</p>
+                          <select
+                            value={miResena?.nota ?? ""}
+                            onChange={(e) =>
+                              cambiarResena(item, { nota: e.target.value ? Number(e.target.value) : null })
+                            }
+                            className="w-full mb-2 text-sm rounded border border-sand px-1.5 py-1 bg-white focus:border-sage outline-none"
+                          >
+                            <option value="">Sin nota</option>
+                            {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
+                              <option key={n} value={n}>
+                                {n}/10
+                              </option>
+                            ))}
+                          </select>
+
+                          <p className="text-xs text-ink/40 px-1.5 pb-1">Tu comentario</p>
                           <div className="px-1.5 pb-2">
-                            <NotaEditable nota={item.nota} onChange={(n) => cambiarNota(item, n)} />
+                            <ComentarioEditable
+                              comentario={miResena?.comentario ?? null}
+                              onGuardar={(c) => cambiarResena(item, { comentario: c })}
+                            />
                           </div>
+
+                          {comentarios.length > 0 && (
+                            <>
+                              <div className="border-t border-sand my-1" />
+                              <p className="text-xs text-ink/40 px-1.5 pb-1">Comentarios</p>
+                              <div className="px-1.5 pb-1 space-y-1.5">
+                                {comentarios.map((r) => (
+                                  <p key={r.userId} className="text-xs text-ink/70">
+                                    <span className="font-medium text-ink">{nombreCorto(usuarios, r.userId)}</span>
+                                    {r.nota && <span className="text-mustard"> ({r.nota}/10)</span>}: {r.comentario}
+                                  </p>
+                                ))}
+                              </div>
+                            </>
+                          )}
                         </>
                       )}
 
@@ -240,7 +304,8 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                 ✕
               </button>
             </div>
-          );
+            );
+          };
 
           return (
             <ColumnaDesplegable key={cat.estado} titulo={cat.label} count={itemsColumna.length} colorClass={cat.textClass}>
