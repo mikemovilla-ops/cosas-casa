@@ -5,16 +5,16 @@ import { prisma } from "@/lib/prisma";
 import { comentarioValido, notaValida } from "@/lib/items";
 
 // Guarda (o borra, con ambos campos a null) la reseña del usuario logueado
-// sobre un item de RESTAURANTE — nunca la de otra persona: no se recibe un
-// userId en el body, siempre se usa el de la sesión.
+// sobre un item de RESTAURANTE o PELISERIE — nunca la de otra persona: no se
+// recibe un userId en el body, siempre se usa el de la sesión.
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const item = await prisma.item.findUnique({ where: { id: params.id } });
   if (!item) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
-  if (item.tipo !== "RESTAURANTE") {
-    return NextResponse.json({ error: "Solo se puede reseñar un restaurante" }, { status: 400 });
+  if (item.tipo !== "RESTAURANTE" && item.tipo !== "PELISERIE") {
+    return NextResponse.json({ error: "Este tipo de item no admite reseñas" }, { status: 400 });
   }
 
   const body = await request.json();
