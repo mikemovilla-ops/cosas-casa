@@ -243,7 +243,7 @@ function Columna({
       {items.length === 0 ? (
         <p className="text-ink/40 text-sm italic">{vacio}</p>
       ) : ordenable ? (
-        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand">
+        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand overflow-hidden">
           {(item) => (
             <FilaOrdenable
               key={item.id}
