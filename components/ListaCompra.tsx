@@ -201,6 +201,11 @@ function Columna({
   function fila(item: Item, asaProps?: React.HTMLAttributes<HTMLElement>) {
     return (
       <>
+        {/* Barra roja posicionada aparte (no border-l): un border compite
+            con el border-top que divide-y pone entre filas y deja una
+            muesca justo en la esquina en la segunda fila urgente en
+            adelante. Así siempre queda sólida. */}
+        {item.urgente && <span className="absolute inset-y-0 left-0 w-1 bg-clay" />}
         {asaProps && <AsaArrastre asaProps={asaProps} />}
         {!tachado && (
           <button
@@ -248,8 +253,8 @@ function Columna({
             <FilaOrdenable
               key={item.id}
               id={item.id}
-              className={`flex items-center gap-2 py-2 ${
-                item.urgente ? "bg-clay/15 border-l-4 border-clay pl-2 pr-3" : "px-3"
+              className={`relative flex items-center gap-2 py-2 ${
+                item.urgente ? "bg-clay/15 pl-4 pr-3" : "px-3"
               }`}
             >
               {({ asaProps }) => fila(item, asaProps)}
