@@ -24,7 +24,11 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
   const [asignadoAId, setAsignadoAId] = useState("");
   const [enviando, setEnviando] = useState(false);
 
-  const aComprar = items.filter((i) => i.estado === "A_COMPRAR").sort((a, b) => a.orden - b.orden);
+  // Los urgentes van siempre primero, y dentro de cada grupo (urgente / no
+  // urgente) se respeta el orden manual de arrastrar y soltar.
+  const aComprar = items
+    .filter((i) => i.estado === "A_COMPRAR")
+    .sort((a, b) => Number(b.urgente) - Number(a.urgente) || a.orden - b.orden);
   // "Comprado" va alfabético en vez de por orden manual — con la compra ya
   // hecha, lo útil es poder encontrar rápido un nombre, no el orden en que
   // se marcaron.
@@ -69,6 +73,12 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
   async function asignar(item: Item, nuevoAsignadoAId: string | null) {
     setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, asignadoAId: nuevoAsignadoAId } : i)));
     await actualizarItem(item.id, { asignadoAId: nuevoAsignadoAId });
+    reload();
+  }
+
+  async function cambiarUrgente(item: Item, urgente: boolean) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, urgente } : i)));
+    await actualizarItem(item.id, { urgente });
     reload();
   }
 
@@ -132,6 +142,7 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
           onAsignar={asignar}
           onCantidad={cambiarCantidad}
           onRenombrar={renombrar}
+          onUrgente={cambiarUrgente}
           onEliminar={eliminar}
           onReordenar={reordenar}
           tachado={false}
@@ -145,6 +156,7 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
           onAsignar={asignar}
           onCantidad={cambiarCantidad}
           onRenombrar={renombrar}
+          onUrgente={cambiarUrgente}
           onEliminar={eliminar}
           onReordenar={reordenar}
           tachado
@@ -164,6 +176,7 @@ function Columna({
   onAsignar,
   onCantidad,
   onRenombrar,
+  onUrgente,
   onEliminar,
   onReordenar,
   tachado,
@@ -177,6 +190,7 @@ function Columna({
   onAsignar: (item: Item, asignadoAId: string | null) => void;
   onCantidad: (item: Item, cantidad: number) => void;
   onRenombrar: (item: Item, texto: string) => void;
+  onUrgente: (item: Item, urgente: boolean) => void;
   onEliminar: (id: string) => void;
   onReordenar: (itemsReordenados: Item[]) => void;
   tachado: boolean;
@@ -188,6 +202,19 @@ function Columna({
     return (
       <>
         {asaProps && <AsaArrastre asaProps={asaProps} />}
+        {!tachado && (
+          <button
+            type="button"
+            onClick={() => onUrgente(item, !item.urgente)}
+            aria-label={item.urgente ? "Quitar de urgente" : "Marcar como urgente"}
+            title={item.urgente ? "Urgente — tocar para quitar" : "Marcar como urgente"}
+            className={`shrink-0 text-base leading-none transition ${
+              item.urgente ? "text-clay" : "text-ink/20 hover:text-clay"
+            }`}
+          >
+            ❗
+          </button>
+        )}
         <AsignadoBadge usuarios={usuarios} asignadoAId={item.asignadoAId} onChange={(id) => onAsignar(item, id)} />
         <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
           {(texto) => (
@@ -218,7 +245,13 @@ function Columna({
       ) : ordenable ? (
         <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand">
           {(item) => (
-            <FilaOrdenable key={item.id} id={item.id} className="flex items-center gap-2 px-3 py-2">
+            <FilaOrdenable
+              key={item.id}
+              id={item.id}
+              className={`flex items-center gap-2 py-2 ${
+                item.urgente ? "bg-clay/15 border-l-4 border-clay pl-2 pr-3" : "px-3"
+              }`}
+            >
               {({ asaProps }) => fila(item, asaProps)}
             </FilaOrdenable>
           )}

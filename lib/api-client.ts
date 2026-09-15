@@ -25,6 +25,7 @@ export type Item = {
   texto: string;
   cantidad: number;
   enlace: string | null;
+  urgente: boolean;
   importe: number | null;
   meDeben: boolean | null;
   fecha: string | null;
@@ -83,6 +84,7 @@ export async function crearItem(
     estado?: EstadoItem;
     asignadoAId?: string | null;
     cantidad?: number;
+    urgente?: boolean;
     importe?: number;
     meDeben?: boolean;
     fecha?: string;
@@ -108,6 +110,7 @@ export async function actualizarItem(
     asignadoAId?: string | null;
     cantidad?: number;
     enlace?: string | null;
+    urgente?: boolean;
     importe?: number;
     meDeben?: boolean;
     fecha?: string | null;

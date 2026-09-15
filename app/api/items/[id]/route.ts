@@ -70,6 +70,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
   }
 
+  if ("urgente" in body) {
+    data.urgente = body.urgente === true;
+  }
+
   if ("importe" in body) {
     const importe = importeValido(body.importe);
     if (importe === null) return NextResponse.json({ error: "importe inválido" }, { status: 400 });
