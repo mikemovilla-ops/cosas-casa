@@ -115,9 +115,9 @@ model Item {
   cantidad  Int        @default(1)
   // Enlace a la tienda donde se compra, solo se usa en items de CASA.
   enlace    String?
-  // Solo para COMPRA: marca los items que hacen falta cuanto antes (❗
-  // roja en la fila), aparte del orden manual — para que no se pierdan
-  // entre lo demás.
+  // Solo para COMPRA y TAREA: marca los items que hacen falta cuanto antes
+  // (insignia "!" roja en la fila), aparte del orden manual — para que no
+  // se pierdan entre lo demás.
   urgente   Boolean    @default(false)
   // Solo para DEUDA: importe en euros, de qué dirección es la deuda, y en
   // qué fecha se generó (editable por el usuario, no tiene por qué

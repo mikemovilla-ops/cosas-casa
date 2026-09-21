@@ -12,6 +12,7 @@ import {
 } from "@/lib/api-client";
 import { usePoll } from "@/lib/use-poll";
 import AsignadoBadge from "./AsignadoBadge";
+import BotonUrgente from "./BotonUrgente";
 import CantidadStepper from "./CantidadStepper";
 import NombreEditable from "./NombreEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
@@ -207,19 +208,7 @@ function Columna({
             adelante. Así siempre queda sólida. */}
         {item.urgente && <span className="absolute inset-y-0 left-0 w-1 bg-clay" />}
         {asaProps && <AsaArrastre asaProps={asaProps} />}
-        {!tachado && (
-          <button
-            type="button"
-            onClick={() => onUrgente(item, !item.urgente)}
-            aria-label={item.urgente ? "Quitar de urgente" : "Marcar como urgente"}
-            title={item.urgente ? "Urgente — tocar para quitar" : "Marcar como urgente"}
-            className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold leading-none transition ${
-              item.urgente ? "bg-clay text-white" : "bg-ink/10 text-ink/40 hover:bg-clay/30 hover:text-clay"
-            }`}
-          >
-            !
-          </button>
-        )}
+        {!tachado && <BotonUrgente urgente={item.urgente} onChange={(u) => onUrgente(item, u)} />}
         <AsignadoBadge usuarios={usuarios} asignadoAId={item.asignadoAId} onChange={(id) => onAsignar(item, id)} />
         <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
           {(texto) => (

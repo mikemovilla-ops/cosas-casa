@@ -91,7 +91,7 @@ export async function POST(request: Request) {
     tipoCocina = typeof body.tipoCocina === "string" && body.tipoCocina.trim() ? body.tipoCocina.trim() : null;
   }
 
-  const urgente = tipo === "COMPRA" && body.urgente === true;
+  const urgente = (tipo === "COMPRA" || tipo === "TAREA") && body.urgente === true;
 
   const item = await prisma.item.create({
     data: {
