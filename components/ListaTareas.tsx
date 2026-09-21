@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { actualizarItem, crearItem, eliminarItem, fetchItems, reordenarColumna, type Item } from "@/lib/api-client";
 import { usePoll } from "@/lib/use-poll";
+import BotonUrgente from "./BotonUrgente";
 import NombreEditable from "./NombreEditable";
 import FechaEditable from "./FechaEditable";
 import ListaOrdenable, { AsaArrastre, FilaOrdenable } from "./ListaOrdenable";
@@ -15,7 +16,10 @@ export default function ListaTareas() {
   const [texto, setTexto] = useState("");
   const [enviando, setEnviando] = useState(false);
 
-  const pendientes = items.filter((i) => i.estado === "PENDIENTE").sort((a, b) => a.orden - b.orden);
+  // Las urgentes van siempre primero; dentro de cada grupo, el orden manual.
+  const pendientes = items
+    .filter((i) => i.estado === "PENDIENTE")
+    .sort((a, b) => Number(b.urgente) - Number(a.urgente) || a.orden - b.orden);
   // "Hecho" va alfabético (y sin arrastre manual) igual que en Compra/Casa.
   const hechas = items
     .filter((i) => i.estado === "HECHO")
@@ -45,6 +49,12 @@ export default function ListaTareas() {
   async function renombrar(item: Item, nuevoTexto: string) {
     setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, texto: nuevoTexto } : i)));
     await actualizarItem(item.id, { texto: nuevoTexto });
+    reload();
+  }
+
+  async function cambiarUrgente(item: Item, urgente: boolean) {
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, urgente } : i)));
+    await actualizarItem(item.id, { urgente });
     reload();
   }
 
@@ -92,6 +102,7 @@ export default function ListaTareas() {
           onToggle={toggle}
           onRenombrar={renombrar}
           onCambiarFecha={cambiarFecha}
+          onUrgente={cambiarUrgente}
           onEliminar={eliminar}
           onReordenar={reordenar}
           tachado={false}
@@ -103,6 +114,7 @@ export default function ListaTareas() {
           onToggle={toggle}
           onRenombrar={renombrar}
           onCambiarFecha={cambiarFecha}
+          onUrgente={cambiarUrgente}
           onEliminar={eliminar}
           onReordenar={reordenar}
           tachado
@@ -120,6 +132,7 @@ function Columna({
   onToggle,
   onRenombrar,
   onCambiarFecha,
+  onUrgente,
   onEliminar,
   onReordenar,
   tachado,
@@ -131,6 +144,7 @@ function Columna({
   onToggle: (item: Item) => void;
   onRenombrar: (item: Item, texto: string) => void;
   onCambiarFecha: (item: Item, fecha: string | null) => void;
+  onUrgente: (item: Item, urgente: boolean) => void;
   onEliminar: (id: string) => void;
   onReordenar: (itemsReordenados: Item[]) => void;
   tachado: boolean;
@@ -141,7 +155,11 @@ function Columna({
   function fila(item: Item, asaProps?: React.HTMLAttributes<HTMLElement>) {
     return (
       <>
+        {/* Barra roja aparte (no border-l): ver el comentario equivalente en
+            ListaCompra sobre la muesca con el border-top de divide-y. */}
+        {item.urgente && <span className="absolute inset-y-0 left-0 w-1 bg-clay" />}
         {asaProps && <AsaArrastre asaProps={asaProps} />}
+        {!tachado && <BotonUrgente urgente={item.urgente} onChange={(u) => onUrgente(item, u)} />}
         <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
           {(texto) => (
             <button
@@ -169,9 +187,13 @@ function Columna({
       {items.length === 0 ? (
         <p className="text-ink/40 text-sm italic">{vacio}</p>
       ) : ordenable ? (
-        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand">
+        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand overflow-hidden">
           {(item) => (
-            <FilaOrdenable key={item.id} id={item.id} className="flex items-center gap-2 px-3 py-2">
+            <FilaOrdenable
+              key={item.id}
+              id={item.id}
+              className={`relative flex items-center gap-2 py-2 ${item.urgente ? "bg-clay/15 pl-4 pr-3" : "px-3"}`}
+            >
               {({ asaProps }) => fila(item, asaProps)}
             </FilaOrdenable>
           )}
