@@ -278,20 +278,35 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
 
                       <div className="border-t border-sand my-1" />
                       <p className="text-xs text-ink/40 px-1.5 pb-1">Mover a</p>
-                      {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => (
-                        <button
-                          key={c.estado}
-                          onClick={() => {
-                            mover(item, c.estado);
-                            cerrar();
-                          }}
-                          className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition ${
-                            c.estado === "HECHO" ? "text-emerald-600" : "text-ink"
-                          }`}
-                        >
-                          → {c.label}
-                        </button>
-                      ))}
+                      {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => {
+                        const indiceActual = COLUMNAS.findIndex((cc) => cc.estado === item.estado);
+                        const indiceDestino = COLUMNAS.findIndex((cc) => cc.estado === c.estado);
+                        const adelante = indiceDestino > indiceActual;
+                        // A "Vista" se deja la flecha simple de siempre: ya
+                        // se distingue bien por el color. Al resto, tantos
+                        // guiones como pasos hay hasta esa columna.
+                        const pasos = "-".repeat(Math.abs(indiceDestino - indiceActual));
+                        const flecha =
+                          c.estado === "HECHO" ? (adelante ? "→" : "←") : adelante ? `${pasos}>` : `<${pasos}`;
+                        return (
+                          <button
+                            key={c.estado}
+                            onClick={() => {
+                              mover(item, c.estado);
+                              cerrar();
+                            }}
+                            className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition ${
+                              c.estado === "HECHO" ? "text-emerald-600" : "text-ink"
+                            }`}
+                          >
+                            {/* La fuente convierte "-->"/"<--" en una sola
+                                flecha por ligadura tipográfica — se
+                                desactiva aquí para que se vea larga de
+                                verdad. */}
+                            <span className="[font-variant-ligatures:none]">{flecha}</span> {c.label}
+                          </button>
+                        );
+                      })}
                     </>
                   );
                 }}
