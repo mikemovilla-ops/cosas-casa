@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { fetchUsuarios, type Usuario } from "@/lib/api-client";
 import { usePoll } from "@/lib/use-poll";
 import { useNavegacion, type Vista } from "@/contexts/NavegacionContext";
@@ -28,8 +29,21 @@ export default function ListasApp() {
   // basta con sondearlo cada 30s en vez de cada 4s como los items.
   const { items: usuarios } = usePoll<Usuario>(fetchUsuarios, 30000);
 
+  // Solo en móvil: al tocar una pestaña, la vista nueva monta con la lista
+  // vacía hasta que llega el primer fetch, lo que puede sentirse como que
+  // el toque no hizo nada. Este parpadeo de opacidad da feedback inmediato
+  // de que sí se ha registrado, mientras carga.
+  const [cambiando, setCambiando] = useState(false);
+  useEffect(() => {
+    setCambiando(true);
+    const id = setTimeout(() => setCambiando(false), 300);
+    return () => clearTimeout(id);
+  }, [vista]);
+
   return (
-    <div>
+    <div
+      className={`transition-opacity duration-300 ${cambiando ? "max-md:opacity-40" : "max-md:opacity-100"}`}
+    >
       <h1 className="md:hidden text-xl font-semibold text-sagedark mb-4">{TITULOS[vista]}</h1>
       {vista === "compra" && <ListaCompra usuarios={usuarios} />}
       {vista === "casa" && <ListaCasa usuarios={usuarios} />}

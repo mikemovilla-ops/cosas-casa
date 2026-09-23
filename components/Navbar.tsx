@@ -174,7 +174,7 @@ function NavbarAutenticado({
                     irA("tareas");
                     setMenuAbierto(false);
                   }}
-                  className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition text-ink"
+                  className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 active:opacity-50 transition text-ink"
                 >
                   ✅ Tareas
                 </button>
@@ -183,7 +183,7 @@ function NavbarAutenticado({
                     irA("deudas");
                     setMenuAbierto(false);
                   }}
-                  className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition text-ink"
+                  className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 active:opacity-50 transition text-ink"
                 >
                   💶 Deudas
                 </button>
@@ -231,7 +231,12 @@ function TabInferior({
   "aria-expanded"?: boolean;
 }) {
   return (
-    <button type="button" onClick={onClick} className="flex-1 flex justify-center py-1.5 min-w-0" {...rest}>
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex-1 flex justify-center py-1.5 min-w-0 transition-opacity active:opacity-50"
+      {...rest}
+    >
       <span
         className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-2xl max-w-full text-[11px] font-medium transition ${
           activo ? "bg-sage/15 text-sagedark" : "text-ink/50"

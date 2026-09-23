@@ -205,7 +205,7 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
               />
               <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
                 {(texto) => (
-                  <span className={`flex-1 ${vista ? "line-through text-emerald-600/70" : ""}`}>{texto}</span>
+                  <span className={`flex-1 ${vista ? "text-emerald-600/70" : ""}`}>{texto}</span>
                 )}
               </NombreEditable>
               {item.plataforma && <PlataformaIndicador plataforma={item.plataforma} />}
