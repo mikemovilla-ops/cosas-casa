@@ -7,10 +7,12 @@ import {
   enlaceValido,
   estadoValidoParaTipo,
   fechaValida,
+  grupoMuscularValido,
   importeValido,
   normalizarCantidad,
   notaValida,
   ordenValido,
+  pesoValido,
   tipoContenidoValido,
   TIPOS_PERSONALES,
 } from "@/lib/items";
@@ -23,7 +25,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   const existente = await prisma.item.findUnique({ where: { id: params.id } });
   if (!existente) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
-  // TAREA/DEUDA son personales: nadie más que quien las creó puede tocarlas,
+  // TAREA/DEUDA/GYM son personales: nadie más que quien las creó puede tocarlas,
   // aunque conozca el id.
   if (TIPOS_PERSONALES.includes(existente.tipo) && existente.creadoPorId !== session.user.id) {
     return NextResponse.json({ error: "No autorizado" }, { status: 403 });
@@ -113,6 +115,23 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       body.tipoCocina === null || typeof body.tipoCocina !== "string" || !body.tipoCocina.trim()
         ? null
         : body.tipoCocina.trim();
+  }
+
+  if ("grupoMuscular" in body) {
+    if (!grupoMuscularValido(body.grupoMuscular)) {
+      return NextResponse.json({ error: "grupoMuscular inválido" }, { status: 400 });
+    }
+    data.grupoMuscular = body.grupoMuscular;
+  }
+
+  if ("peso" in body) {
+    if (body.peso === null) {
+      data.peso = null;
+    } else {
+      const peso = pesoValido(body.peso);
+      if (peso === null) return NextResponse.json({ error: "peso inválido" }, { status: 400 });
+      data.peso = peso;
+    }
   }
 
   if ("nota" in body) {

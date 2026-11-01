@@ -10,6 +10,7 @@ import ListaPelisSeries from "./ListaPelisSeries";
 import ListaRestaurantes from "./ListaRestaurantes";
 import ListaTareas from "./ListaTareas";
 import ListaDeudas from "./ListaDeudas";
+import ListaGym from "./ListaGym";
 
 // Solo en móvil (ver md:hidden abajo): en escritorio la pestaña activa ya se
 // ve resaltada junto al resto, pero en móvil la barra inferior deja poco
@@ -21,6 +22,7 @@ const TITULOS: Record<Vista, string> = {
   restaurantes: "🍽️ Restaurantes",
   tareas: "✅ Tareas",
   deudas: "💶 Deudas",
+  gym: "🏋️ Gym",
 };
 
 export default function ListasApp() {
@@ -51,6 +53,7 @@ export default function ListasApp() {
       {vista === "restaurantes" && <ListaRestaurantes usuarios={usuarios} />}
       {vista === "tareas" && tareasDeudasActivado && <ListaTareas />}
       {vista === "deudas" && tareasDeudasActivado && <ListaDeudas />}
+      {vista === "gym" && tareasDeudasActivado && <ListaGym />}
     </div>
   );
 }

@@ -66,7 +66,7 @@ function useTemaColor() {
 }
 
 // Contenido de los ajustes personales: tema de color (solo local, por
-// dispositivo) y mostrar/ocultar las pestañas privadas de Tareas y Deudas
+// dispositivo) y mostrar/ocultar las pestañas privadas de Tareas, Deudas y Gym
 // (guardado en el servidor, ver NavegacionContext). Se reutiliza tanto
 // dentro del desplegable de escritorio como en la hoja inferior de móvil,
 // para no duplicar esta lógica dos veces.
@@ -104,7 +104,7 @@ export function ContenidoAjustes({ onAccion }: { onAccion?: () => void }) {
             }}
             className="w-full flex items-center gap-2 text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition text-ink"
           >
-            ✅💶 Ocultar Tareas y Deudas
+            ✅💶🏋️ Ocultar Tareas, Deudas y Gym
           </button>
         ) : (
           <button
@@ -114,7 +114,7 @@ export function ContenidoAjustes({ onAccion }: { onAccion?: () => void }) {
             }}
             className="w-full flex items-center gap-2 text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition text-ink"
           >
-            ✅💶 Activar Tareas y Deudas
+            ✅💶🏋️ Activar Tareas, Deudas y Gym
           </button>
         )}
       </div>

@@ -1,19 +1,21 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import type { Prisma, TipoLista } from "@prisma/client";
+import type { GrupoMuscular, Prisma, TipoLista } from "@prisma/client";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
   ESTADO_INICIAL,
   estadoValidoParaTipo,
   fechaValida,
+  grupoMuscularValido,
   importeValido,
   normalizarCantidad,
+  pesoValido,
   tipoContenidoValido,
   TIPOS_PERSONALES,
 } from "@/lib/items";
 
-const TIPOS: TipoLista[] = ["COMPRA", "CASA", "TAREA", "DEUDA", "PELISERIE", "RESTAURANTE"];
+const TIPOS: TipoLista[] = ["COMPRA", "CASA", "TAREA", "DEUDA", "PELISERIE", "RESTAURANTE", "GYM"];
 
 export async function GET(request: Request) {
   const session = await getServerSession(authOptions);
@@ -91,6 +93,17 @@ export async function POST(request: Request) {
     tipoCocina = typeof body.tipoCocina === "string" && body.tipoCocina.trim() ? body.tipoCocina.trim() : null;
   }
 
+  let grupoMuscular: GrupoMuscular | null = null;
+  let peso: number | null = null;
+  if (tipo === "GYM") {
+    if (!grupoMuscularValido(body.grupoMuscular)) {
+      return NextResponse.json({ error: "grupoMuscular inválido" }, { status: 400 });
+    }
+    grupoMuscular = body.grupoMuscular;
+    peso = pesoValido(body.peso);
+    fecha = new Date();
+  }
+
   const urgente = (tipo === "COMPRA" || tipo === "TAREA") && body.urgente === true;
 
   const item = await prisma.item.create({
@@ -108,6 +121,8 @@ export async function POST(request: Request) {
       tipoContenido,
       plataforma,
       tipoCocina,
+      grupoMuscular,
+      peso,
       orden: Date.now(),
     },
   });

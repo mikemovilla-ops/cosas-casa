@@ -5,10 +5,12 @@ import {
   enlaceValido,
   estadoValidoParaTipo,
   fechaValida,
+  grupoMuscularValido,
   importeValido,
   normalizarCantidad,
   notaValida,
   ordenValido,
+  pesoValido,
   tipoContenidoValido,
 } from "./items";
 
@@ -54,6 +56,36 @@ describe("tipoContenidoValido", () => {
     expect(tipoContenidoValido(null)).toBe(false);
     expect(tipoContenidoValido(undefined)).toBe(false);
     expect(tipoContenidoValido(1)).toBe(false);
+  });
+});
+
+describe("grupoMuscularValido", () => {
+  it("acepta todos los grupos", () => {
+    ["PECHO", "ESPALDA", "TRAPECIO", "BICEPS", "TRICEPS", "PIERNA"].forEach((g) => expect(grupoMuscularValido(g)).toBe(true));
+  });
+
+  it("rechaza cualquier otro valor", () => {
+    expect(grupoMuscularValido("HOMBRO")).toBe(false);
+    expect(grupoMuscularValido("pecho")).toBe(false);
+    expect(grupoMuscularValido("")).toBe(false);
+    expect(grupoMuscularValido(null)).toBe(false);
+  });
+});
+
+describe("pesoValido", () => {
+  it("acepta 0 o más y redondea a 2 decimales", () => {
+    expect(pesoValido(0)).toBe(0);
+    expect(pesoValido(42.5)).toBe(42.5);
+    expect(pesoValido("17.125")).toBe(17.13);
+  });
+
+  it("rechaza negativos, vacío y basura", () => {
+    expect(pesoValido(-5)).toBeNull();
+    expect(pesoValido("")).toBeNull();
+    expect(pesoValido("mucho")).toBeNull();
+    expect(pesoValido(null)).toBeNull();
+    expect(pesoValido(undefined)).toBeNull();
+    expect(pesoValido(Infinity)).toBeNull();
   });
 });
 

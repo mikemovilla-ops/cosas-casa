@@ -1,4 +1,4 @@
-import type { EstadoItem, TipoContenido, TipoLista } from "@prisma/client";
+import type { EstadoItem, GrupoMuscular, TipoContenido, TipoLista } from "@prisma/client";
 
 // Qué estados son válidos para cada tipo de lista — evita que, por ejemplo,
 // un item de COMPRA acabe con estado URGENTE por un body manipulado a mano.
@@ -9,6 +9,8 @@ const ESTADOS_POR_TIPO: Record<TipoLista, EstadoItem[]> = {
   DEUDA: ["PENDIENTE", "HECHO"],
   PELISERIE: ["PENDIENTE", "EN_CURSO", "HECHO"],
   RESTAURANTE: ["PENDIENTE", "HECHO"],
+  // Un ejercicio no se "completa": solo existe con su peso actual.
+  GYM: ["PENDIENTE"],
 };
 
 export const ESTADO_INICIAL: Record<TipoLista, EstadoItem> = {
@@ -18,6 +20,7 @@ export const ESTADO_INICIAL: Record<TipoLista, EstadoItem> = {
   DEUDA: "PENDIENTE",
   PELISERIE: "PENDIENTE",
   RESTAURANTE: "PENDIENTE",
+  GYM: "PENDIENTE",
 };
 
 const TIPOS_CONTENIDO: TipoContenido[] = ["PELICULA", "SERIE"];
@@ -26,9 +29,15 @@ export function tipoContenidoValido(valor: unknown): valor is TipoContenido {
   return typeof valor === "string" && (TIPOS_CONTENIDO as string[]).includes(valor);
 }
 
-// TAREA y DEUDA son personales: solo las ve/gestiona quien las creó. COMPRA
-// y CASA son compartidas entre los dos usuarios.
-export const TIPOS_PERSONALES: TipoLista[] = ["TAREA", "DEUDA"];
+const GRUPOS_MUSCULARES: GrupoMuscular[] = ["PECHO", "ESPALDA", "TRAPECIO", "BICEPS", "TRICEPS", "PIERNA"];
+
+export function grupoMuscularValido(valor: unknown): valor is GrupoMuscular {
+  return typeof valor === "string" && (GRUPOS_MUSCULARES as string[]).includes(valor);
+}
+
+// TAREA, DEUDA y GYM son personales: solo las ve/gestiona quien las creó.
+// COMPRA y CASA son compartidas entre los dos usuarios.
+export const TIPOS_PERSONALES: TipoLista[] = ["TAREA", "DEUDA", "GYM"];
 
 export function estadoValidoParaTipo(tipo: TipoLista, estado: string): estado is EstadoItem {
   return (ESTADOS_POR_TIPO[tipo] as string[]).includes(estado);
@@ -59,6 +68,15 @@ export function fechaValida(valor: unknown): Date | null {
   if (typeof valor !== "string" || !valor) return null;
   const d = new Date(valor);
   return Number.isNaN(d.getTime()) ? null : d;
+}
+
+// Peso en kg: 0 o más (0 = sin lastre), redondeado a 2 decimales. Para
+// quitarlo se envía null directamente, gestionado aparte en la ruta.
+export function pesoValido(valor: unknown): number | null {
+  if (valor === null || valor === undefined || valor === "") return null;
+  const n = Number(valor);
+  if (!Number.isFinite(n) || n < 0) return null;
+  return Math.round(n * 100) / 100;
 }
 
 export function ordenValido(valor: unknown): number | null {
