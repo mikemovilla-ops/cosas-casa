@@ -234,7 +234,7 @@ function Columna({
           {(texto) => (
             <button
               onClick={() => onToggle(item)}
-              className={`flex-1 text-left ${vista ? "line-through text-emerald-600/70" : "text-ink"}`}
+              className={`flex-1 text-left ${vista ? "text-emerald-600/70" : "text-ink"}`}
             >
               {texto}
             </button>
