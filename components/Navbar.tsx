@@ -59,7 +59,7 @@ function NavbarAutenticado({
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-2 px-4 py-3">
           <span className="font-semibold text-lg text-sagedark shrink-0">🏡 Cosas de Casa (C&amp;M)</span>
 
-          {/* Escritorio: pestañas compartidas en línea. Tareas/Deudas (personales)
+          {/* Escritorio: pestañas compartidas en línea. Tareas/Deudas/Gym (personales)
               van aparte, debajo, para no mezclarlas con las compartidas. */}
           <nav className="hidden md:flex items-center gap-1 flex-wrap">
             {PESTANAS.map((p) => (
@@ -96,6 +96,9 @@ function NavbarAutenticado({
               <TabDesktop activo={vista === "deudas"} onClick={() => irA("deudas")}>
                 💶 Deudas
               </TabDesktop>
+              <TabDesktop activo={vista === "gym"} onClick={() => irA("gym")}>
+                🏋️ Gym
+              </TabDesktop>
             </div>
           </div>
         )}
@@ -122,7 +125,7 @@ function NavbarAutenticado({
         <TabInferior
           icon="☰"
           label="Menú"
-          activo={menuAbierto || vista === "tareas" || vista === "deudas"}
+          activo={menuAbierto || vista === "tareas" || vista === "deudas" || vista === "gym"}
           aria-expanded={menuAbierto}
           onClick={() => setMenuAbierto(!menuAbierto)}
         />
@@ -186,6 +189,15 @@ function NavbarAutenticado({
                   className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 active:opacity-50 transition text-ink"
                 >
                   💶 Deudas
+                </button>
+                <button
+                  onClick={() => {
+                    irA("gym");
+                    setMenuAbierto(false);
+                  }}
+                  className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 active:opacity-50 transition text-ink"
+                >
+                  🏋️ Gym
                 </button>
               </div>
             )}

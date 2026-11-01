@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { actualizarPerfil, fetchPerfil } from "@/lib/api-client";
 
-export type Vista = "compra" | "casa" | "pelisseries" | "restaurantes" | "tareas" | "deudas";
+export type Vista = "compra" | "casa" | "pelisseries" | "restaurantes" | "tareas" | "deudas" | "gym";
 
 type NavegacionContextValue = {
   vista: Vista;
@@ -36,7 +36,7 @@ export function NavegacionProvider({ children }: { children: React.ReactNode }) 
 
   async function desactivarTareasDeudas() {
     setTareasDeudasActivado(false);
-    setVista((v) => (v === "tareas" || v === "deudas" ? "compra" : v));
+    setVista((v) => (v === "tareas" || v === "deudas" || v === "gym" ? "compra" : v));
     await actualizarPerfil({ tareasDeudasActivado: false });
   }
 

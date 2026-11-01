@@ -1,4 +1,4 @@
-export type TipoLista = "COMPRA" | "CASA" | "TAREA" | "DEUDA" | "PELISERIE" | "RESTAURANTE";
+export type TipoLista = "COMPRA" | "CASA" | "TAREA" | "DEUDA" | "PELISERIE" | "RESTAURANTE" | "GYM";
 export type EstadoItem =
   | "A_COMPRAR"
   | "COMPRADO"
@@ -9,6 +9,7 @@ export type EstadoItem =
   | "HECHO"
   | "EN_CURSO";
 export type TipoContenido = "PELICULA" | "SERIE";
+export type GrupoMuscular = "PECHO" | "ESPALDA" | "TRAPECIO" | "BICEPS" | "TRICEPS" | "PIERNA";
 
 // Valoración de una persona sobre un RESTAURANTE (ver lib/items.ts). nota y
 // comentario son independientes: se puede comentar sin puntuar o al revés.
@@ -32,6 +33,8 @@ export type Item = {
   tipoContenido: TipoContenido | null;
   plataforma: string | null;
   tipoCocina: string | null;
+  grupoMuscular: GrupoMuscular | null;
+  peso: number | null;
   nota: number | null;
   resenas: Resena[];
   orden: number;
@@ -91,6 +94,8 @@ export async function crearItem(
     tipoContenido?: TipoContenido;
     plataforma?: string;
     tipoCocina?: string;
+    grupoMuscular?: GrupoMuscular;
+    peso?: number | null;
   }
 ): Promise<Item> {
   const res = await fetch("/api/items", {
@@ -118,6 +123,8 @@ export async function actualizarItem(
     tipoContenido?: TipoContenido;
     plataforma?: string | null;
     tipoCocina?: string | null;
+    grupoMuscular?: GrupoMuscular;
+    peso?: number | null;
     nota?: number | null;
   }
 ): Promise<Item> {

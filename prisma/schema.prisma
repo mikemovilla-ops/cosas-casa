@@ -19,7 +19,7 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
 
-  // Controla si le aparecen las pestañas personales de Tareas y Deudas —
+  // Controla si le aparecen las pestañas personales de Tareas, Deudas y Gym —
   // no afecta a qué datos ve (esos siempre están filtrados por quién los
   // creó), solo a si la pestaña se muestra.
   tareasDeudasActivado Boolean @default(false)
@@ -73,7 +73,7 @@ model VerificationToken {
 }
 
 // Tipo de lista al que pertenece el item. COMPRA, CASA, PELISERIE y
-// RESTAURANTE son compartidas entre los dos usuarios; TAREA y DEUDA son
+// RESTAURANTE son compartidas entre los dos usuarios; TAREA, DEUDA y GYM son
 // personales (solo las ve quien las creó, ver app/api/items).
 enum TipoLista {
   COMPRA
@@ -82,6 +82,17 @@ enum TipoLista {
   DEUDA
   PELISERIE
   RESTAURANTE
+  GYM
+}
+
+// Solo para items de GYM.
+enum GrupoMuscular {
+  PECHO
+  ESPALDA
+  TRAPECIO
+  BICEPS
+  TRICEPS
+  PIERNA
 }
 
 // Solo para items de PELISERIE.
@@ -132,6 +143,11 @@ model Item {
   // Solo para RESTAURANTE: tipo de cocina (texto libre: chino, japonés,
   // hamburguesas...).
   tipoCocina    String?
+  // Solo para GYM: grupo muscular del ejercicio y peso que se levanta en kg
+  // (null = sin peso apuntado, p. ej. dominadas con el propio cuerpo). La
+  // `fecha` se reutiliza como "última vez que se actualizó el peso".
+  grupoMuscular GrupoMuscular?
+  peso          Float?
   // Nota única de 1 a 10 (legacy). Ya no se usa ni para RESTAURANTE ni para
   // PELISERIE (ver modelo Resena: ahí cada persona pone la suya y se
   // muestra la media) — se deja el campo por compatibilidad con datos ya
