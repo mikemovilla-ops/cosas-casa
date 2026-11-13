@@ -6,7 +6,7 @@ export default function BotonEntrarGoogle() {
   return (
     <button
       onClick={() => signIn("google")}
-      className="bg-sage text-white font-medium px-4 py-2 rounded-md hover:bg-sagedark transition"
+      className="btn-acento px-6 py-2.5"
     >
       Entrar con Google
     </button>

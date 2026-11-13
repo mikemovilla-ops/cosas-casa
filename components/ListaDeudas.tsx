@@ -87,7 +87,7 @@ export default function ListaDeudas() {
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="¿Quién / por qué?"
-          className="flex-1 min-w-[10rem] rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="flex-1 min-w-[10rem] campo px-3 py-2"
         />
         <input
           type="number"
@@ -97,12 +97,12 @@ export default function ListaDeudas() {
           onChange={(e) => setImporte(e.target.value)}
           placeholder="€"
           aria-label="Importe"
-          className="w-24 rounded-md border border-sand px-2 py-2 bg-white focus:border-sage outline-none"
+          className="w-24 campo px-2 py-2"
         />
         <select
           value={meDeben ? "si" : "no"}
           onChange={(e) => setMeDeben(e.target.value === "si")}
-          className="rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="campo px-3 py-2"
         >
           <option value="si">Me deben</option>
           <option value="no">Debo</option>
@@ -112,12 +112,12 @@ export default function ListaDeudas() {
           value={fecha}
           onChange={(e) => setFecha(e.target.value)}
           aria-label="Fecha"
-          className="rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="campo px-3 py-2"
         />
         <button
           type="submit"
           disabled={!texto.trim() || !importe || enviando}
-          className="bg-sage text-white font-medium px-4 py-2 rounded-md hover:bg-sagedark transition disabled:opacity-40"
+          className="btn-acento"
         >
           Añadir
         </button>
@@ -178,16 +178,16 @@ function Columna({
       count={items.length}
       extra={
         items.length > 0 && (
-          <p className="text-sm text-ink/60 mb-2">
-            Total pendiente: <span className="font-semibold text-ink">{euros(totalPendiente)}</span>
+          <p className="text-sm text-tinta/60 mb-2">
+            Total pendiente: <span className="font-semibold text-tinta">{euros(totalPendiente)}</span>
           </p>
         )
       }
     >
       {items.length === 0 ? (
-        <p className="text-ink/40 text-sm italic">{vacio}</p>
+        <p className="text-tinta/40 text-sm italic">{vacio}</p>
       ) : (
-        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand">
+        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-borde">
           {(item) => {
             const pagada = item.estado === "HECHO";
             return (
@@ -199,10 +199,10 @@ function Columna({
                       {(texto) => (
                         <button
                           onClick={() => onTogglePagada(item)}
-                          className={`flex-1 text-left ${pagada ? "line-through text-emerald-600/70" : "text-ink"}`}
+                          className={`flex-1 text-left ${pagada ? "line-through text-exito/70" : "text-tinta"}`}
                         >
                           {texto}
-                          <span className={`ml-1.5 text-sm ${pagada ? "" : "font-semibold text-clay"}`}>
+                          <span className={`ml-1.5 text-sm ${pagada ? "" : "font-semibold text-coral"}`}>
                             {euros(item.importe ?? 0)}
                           </span>
                         </button>
@@ -216,7 +216,7 @@ function Columna({
                     <button
                       onClick={() => onEliminar(item.id)}
                       aria-label="Eliminar"
-                      className="text-ink/30 hover:text-clay transition px-1"
+                      className="text-tinta/30 hover:text-coral transition px-1"
                     >
                       ✕
                     </button>

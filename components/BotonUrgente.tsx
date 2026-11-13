@@ -18,7 +18,7 @@ export default function BotonUrgente({
       aria-label={urgente ? "Quitar de urgente" : "Marcar como urgente"}
       title={urgente ? "Urgente — tocar para quitar" : "Marcar como urgente"}
       className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold leading-none transition ${
-        urgente ? "bg-clay text-white" : "bg-ink/10 text-ink/40 hover:bg-clay/30 hover:text-clay"
+        urgente ? "bg-coral text-white" : "bg-tinta/10 text-tinta/40 hover:bg-coral/30 hover:text-coral"
       }`}
     >
       !

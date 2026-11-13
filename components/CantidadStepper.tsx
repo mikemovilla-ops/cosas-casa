@@ -13,7 +13,7 @@ export default function CantidadStepper({
         type="button"
         onClick={() => onChange(Math.max(1, cantidad - 1))}
         aria-label="Quitar una unidad"
-        className="w-6 h-6 rounded border border-sand text-ink/50 hover:border-sage hover:text-sagedark transition leading-none"
+        className="w-6 h-6 rounded border border-borde text-tinta/50 hover:border-acento hover:text-acentovivo transition leading-none"
       >
         −
       </button>
@@ -22,7 +22,7 @@ export default function CantidadStepper({
         type="button"
         onClick={() => onChange(cantidad + 1)}
         aria-label="Añadir una unidad"
-        className="w-6 h-6 rounded border border-sand text-ink/50 hover:border-sage hover:text-sagedark transition leading-none"
+        className="w-6 h-6 rounded border border-borde text-tinta/50 hover:border-acento hover:text-acentovivo transition leading-none"
       >
         +
       </button>

@@ -2,27 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tema por defecto ("Bosque"). MenuAjustes sobreescribe estas variables
+   con las del tema que elija cada uno. */
 :root {
-  --bg-color: #fbf7f0;
-  --color-sage: 107 143 113;
-  --color-sagedark: 79 107 84;
+  --color-fondo: 15 26 23;
+  --color-fondooscuro: 10 18 15;
+  --color-superficie: 22 35 31;
+  --color-borde: 42 59 53;
+  --color-acento: 111 207 151;
+  --color-acentovivo: 143 227 176;
+  color-scheme: dark;
 }
 
 @layer base {
   body {
-    background-color: var(--bg-color);
-    color: #2b2620;
+    background-color: rgb(var(--color-fondo));
+    color: #edf1ec;
     transition: background-color 0.2s ease;
   }
 
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+  }
+
+  ::selection {
+    background: rgb(var(--color-acento));
+    color: rgb(var(--color-fondooscuro));
+  }
+
   :focus-visible {
-    outline: 2px solid rgb(var(--color-sage));
+    outline: 2px solid rgb(var(--color-acentovivo));
     outline-offset: 2px;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-white border border-sand rounded-xl shadow-sm;
+    @apply rounded-2xl border border-borde bg-superficie/70 backdrop-blur-sm;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 font-semibold transition disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-acento {
+    @apply btn bg-acento text-fondooscuro hover:bg-acentovivo;
+  }
+
+  .btn-sec {
+    @apply btn border border-borde text-tinta hover:bg-white/10;
+  }
+
+  /* Campos de texto, número, fecha y selects. El padding lo pone cada uno
+     (los editores inline de las filas son más pequeños que el formulario
+     de añadir). */
+  .campo {
+    @apply rounded-lg border border-borde bg-fondooscuro/60 text-tinta outline-none placeholder:text-tinta/40 focus:border-acento;
+  }
+
+  .etiqueta {
+    @apply text-xs font-semibold uppercase tracking-wider text-tinta/50;
+  }
+
+  /* Fondo con un resplandor del color de acento arriba y unos puntitos
+     muy sutiles, en la línea del cielo de EuroAmigus. */
+  .ambiente {
+    background-image:
+      radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.18), transparent),
+      radial-gradient(1px 1px at 140px 110px, rgba(255, 255, 255, 0.12), transparent),
+      radial-gradient(1.5px 1.5px at 200px 40px, rgb(var(--color-acento) / 0.3), transparent),
+      radial-gradient(ellipse at top, rgb(var(--color-acento) / 0.14), transparent 60%);
+    background-size: 240px 200px, 240px 200px, 240px 200px, 100% 100%;
+    background-attachment: scroll, scroll, scroll, fixed;
   }
 }

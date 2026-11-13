@@ -116,18 +116,18 @@ export default function ListaRestaurantes({ usuarios }: { usuarios: Usuario[] })
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="¿Qué restaurante?"
-          className="flex-1 min-w-[10rem] rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="flex-1 min-w-[10rem] campo px-3 py-2"
         />
         <input
           value={tipoCocina}
           onChange={(e) => setTipoCocina(e.target.value)}
           placeholder="Tipo de cocina (opcional)"
-          className="w-44 rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="w-44 campo px-3 py-2"
         />
         <select
           value={asignadoAId}
           onChange={(e) => setAsignadoAId(e.target.value)}
-          className="rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="campo px-3 py-2"
         >
           <option value="">Los dos</option>
           {usuarios.map((u) => (
@@ -139,7 +139,7 @@ export default function ListaRestaurantes({ usuarios }: { usuarios: Usuario[] })
         <button
           type="submit"
           disabled={!texto.trim() || enviando}
-          className="bg-sage text-white font-medium px-4 py-2 rounded-md hover:bg-sagedark transition disabled:opacity-40"
+          className="btn-acento"
         >
           Añadir
         </button>
@@ -234,7 +234,7 @@ function Columna({
           {(texto) => (
             <button
               onClick={() => onToggle(item)}
-              className={`flex-1 text-left ${vista ? "text-emerald-600/70" : "text-ink"}`}
+              className={`flex-1 text-left ${vista ? "text-exito/70" : "text-tinta"}`}
             >
               {texto}
             </button>
@@ -242,7 +242,7 @@ function Columna({
         </NombreEditable>
         <TipoCocinaEditable tipoCocina={item.tipoCocina} onChange={(t) => onTipoCocina(item, t)} />
         {vista && media !== null && (
-          <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded-full border border-mustard/40 text-mustard bg-mustard/10">
+          <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded-full border border-ambar/40 text-ambar bg-ambar/10">
             ⭐ {media.toFixed(1)}/10
           </span>
         )}
@@ -250,11 +250,11 @@ function Columna({
           <MenuAccionesItem>
             {() => (
               <>
-                <p className="text-xs text-ink/40 px-1.5 pb-1">Tu nota</p>
+                <p className="text-xs text-tinta/40 px-1.5 pb-1">Tu nota</p>
                 <select
                   value={miResena?.nota ?? ""}
                   onChange={(e) => onResena(item, { nota: e.target.value ? Number(e.target.value) : null })}
-                  className="w-full mb-2 text-sm rounded border border-sand px-1.5 py-1 bg-white focus:border-sage outline-none"
+                  className="w-full mb-2 text-sm campo rounded px-1.5 py-1"
                 >
                   <option value="">Sin nota</option>
                   {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
@@ -264,7 +264,7 @@ function Columna({
                   ))}
                 </select>
 
-                <p className="text-xs text-ink/40 px-1.5 pb-1">Tu comentario</p>
+                <p className="text-xs text-tinta/40 px-1.5 pb-1">Tu comentario</p>
                 <div className="px-1.5 pb-2">
                   <ComentarioEditable
                     comentario={miResena?.comentario ?? null}
@@ -274,13 +274,13 @@ function Columna({
 
                 {comentarios.length > 0 && (
                   <>
-                    <div className="border-t border-sand my-1" />
-                    <p className="text-xs text-ink/40 px-1.5 pb-1">Comentarios</p>
+                    <div className="border-t border-borde my-1" />
+                    <p className="text-xs text-tinta/40 px-1.5 pb-1">Comentarios</p>
                     <div className="px-1.5 pb-1 space-y-1.5">
                       {comentarios.map((r) => (
-                        <p key={r.userId} className="text-xs text-ink/70">
-                          <span className="font-medium text-ink">{nombreCorto(usuarios, r.userId)}</span>
-                          {r.nota && <span className="text-mustard"> ({r.nota}/10)</span>}: {r.comentario}
+                        <p key={r.userId} className="text-xs text-tinta/70">
+                          <span className="font-medium text-tinta">{nombreCorto(usuarios, r.userId)}</span>
+                          {r.nota && <span className="text-ambar"> ({r.nota}/10)</span>}: {r.comentario}
                         </p>
                       ))}
                     </div>
@@ -293,7 +293,7 @@ function Columna({
         <button
           onClick={() => onEliminar(item.id)}
           aria-label="Eliminar"
-          className="text-ink/30 hover:text-clay transition px-1"
+          className="text-tinta/30 hover:text-coral transition px-1"
         >
           ✕
         </button>
@@ -305,12 +305,12 @@ function Columna({
     <ColumnaDesplegable
       titulo={titulo}
       count={items.length}
-      colorClass={vista ? "text-emerald-600" : "text-sagedark"}
+      colorClass={vista ? "text-exito" : "text-acentovivo"}
     >
       {items.length === 0 ? (
-        <p className="text-ink/40 text-sm italic">{vacio}</p>
+        <p className="text-tinta/40 text-sm italic">{vacio}</p>
       ) : ordenable ? (
-        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand">
+        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-borde">
           {(item) => (
             <FilaOrdenable key={item.id} id={item.id} className="flex flex-wrap items-center gap-2 px-3 py-2">
               {({ asaProps }) => fila(item, asaProps)}
@@ -318,7 +318,7 @@ function Columna({
           )}
         </ListaOrdenable>
       ) : (
-        <ul className="card divide-y divide-sand">
+        <ul className="card divide-y divide-borde">
           {items.map((item) => (
             <li key={item.id} className="flex flex-wrap items-center gap-2 px-3 py-2">
               {fila(item)}

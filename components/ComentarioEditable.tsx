@@ -28,7 +28,7 @@ export default function ComentarioEditable({
       onClick={(e) => e.stopPropagation()}
       placeholder="¿Qué tal la experiencia?"
       rows={2}
-      className="w-full text-sm rounded border border-sand px-1.5 py-1 bg-white focus:border-sage outline-none resize-none"
+      className="w-full text-sm campo rounded px-1.5 py-1 resize-none"
     />
   );
 }

@@ -35,7 +35,7 @@ export default function PlataformaEditable({
           onChange={(e) => setValor(e.target.value)}
           onBlur={guardar}
           placeholder="Netflix, HBO..."
-          className="w-24 text-xs rounded border border-sand px-1.5 py-0.5 bg-white focus:border-sage outline-none"
+          className="w-24 text-xs campo rounded px-1.5 py-0.5"
         />
       </form>
     );
@@ -49,8 +49,8 @@ export default function PlataformaEditable({
       aria-label="Editar plataforma"
       className={`shrink-0 text-[11px] px-1.5 py-0.5 rounded-full border ${
         plataforma
-          ? "border-sage/40 text-sagedark bg-sage/10 hover:bg-sage/20"
-          : "border-sand text-ink/30 hover:text-sage"
+          ? "border-acento/40 text-acentovivo bg-acento/10 hover:bg-acento/20"
+          : "border-borde text-tinta/30 hover:text-acento"
       }`}
     >
       {plataforma ?? "+ plataforma"}

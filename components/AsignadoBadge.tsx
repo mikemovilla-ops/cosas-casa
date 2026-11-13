@@ -42,7 +42,7 @@ export default function AsignadoBadge({
       title={usuario ? nombreCorto(usuario) : "Los dos"}
       aria-label={`Asignado a: ${usuario ? nombreCorto(usuario) : "Los dos"}. Tocar para cambiar.`}
       className={`shrink-0 w-6 h-6 rounded-full text-[11px] font-semibold text-white flex items-center justify-center transition ${
-        usuario ? COLORES[indice] ?? "bg-ink/30" : "bg-ink/20 hover:bg-ink/30"
+        usuario ? COLORES[indice] ?? "bg-tinta/30" : "bg-tinta/20 hover:bg-tinta/30"
       }`}
     >
       {usuario ? inicial(usuario) : "2"}

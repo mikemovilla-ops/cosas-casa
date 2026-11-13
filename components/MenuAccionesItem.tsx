@@ -23,7 +23,7 @@ export default function MenuAccionesItem({
         }}
         aria-label="Más opciones"
         aria-expanded={abierto}
-        className="text-ink/30 hover:text-sage px-1.5 leading-none"
+        className="text-tinta/30 hover:text-acento px-1.5 leading-none"
       >
         ⋯
       </button>
@@ -36,7 +36,7 @@ export default function MenuAccionesItem({
             onClick={() => setAbierto(false)}
           />
           <div
-            className="absolute right-0 mt-1 w-48 max-w-[calc(100vw-2rem)] card z-40 p-2"
+            className="absolute right-0 mt-1 w-48 max-w-[calc(100vw-2rem)] card bg-superficie shadow-xl shadow-black/40 z-40 p-2"
             onClick={(e) => e.stopPropagation()}
           >
             {children(() => setAbierto(false))}

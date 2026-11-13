@@ -99,7 +99,7 @@ export default function ListaGym() {
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="Ejercicio (press banca...)"
-          className="flex-1 min-w-[10rem] rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="flex-1 min-w-[10rem] campo px-3 py-2"
         />
         <input
           type="number"
@@ -110,13 +110,13 @@ export default function ListaGym() {
           onChange={(e) => setPeso(e.target.value)}
           placeholder="kg"
           aria-label="Peso en kg"
-          className="w-20 rounded-md border border-sand px-2 py-2 bg-white focus:border-sage outline-none"
+          className="w-20 campo px-2 py-2"
         />
         <select
           value={grupo}
           onChange={(e) => setGrupo(e.target.value as GrupoMuscular)}
           aria-label="Grupo muscular"
-          className="rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="campo px-3 py-2"
         >
           {GRUPOS.map((g) => (
             <option key={g.grupo} value={g.grupo}>
@@ -127,7 +127,7 @@ export default function ListaGym() {
         <button
           type="submit"
           disabled={!texto.trim() || enviando}
-          className="bg-sage text-white font-medium px-4 py-2 rounded-md hover:bg-sagedark transition disabled:opacity-40"
+          className="btn-acento"
         >
           Añadir
         </button>
@@ -171,16 +171,16 @@ function Columna({
   return (
     <ColumnaDesplegable titulo={titulo} count={items.length}>
       {items.length === 0 ? (
-        <p className="text-ink/40 text-sm italic">Sin ejercicios apuntados</p>
+        <p className="text-tinta/40 text-sm italic">Sin ejercicios apuntados</p>
       ) : (
-        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand">
+        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-borde">
           {(item) => (
             <FilaOrdenable key={item.id} id={item.id} className="flex items-center gap-2 px-3 py-2">
               {({ asaProps }) => (
                 <>
                   <AsaArrastre asaProps={asaProps} />
                   <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
-                    {(texto) => <span className="flex-1 text-ink">{texto}</span>}
+                    {(texto) => <span className="flex-1 text-tinta">{texto}</span>}
                   </NombreEditable>
                   <PesoEditable peso={item.peso} onChange={(p) => onCambiarPeso(item, p)} />
                   <FechaEditable
@@ -191,7 +191,7 @@ function Columna({
                   <button
                     onClick={() => onEliminar(item.id)}
                     aria-label="Eliminar"
-                    className="text-ink/30 hover:text-clay transition px-1"
+                    className="text-tinta/30 hover:text-coral transition px-1"
                   >
                     ✕
                   </button>
@@ -239,7 +239,7 @@ function PesoEditable({ peso, onChange }: { peso: number | null; onChange: (peso
           onChange={(e) => setValor(e.target.value)}
           onBlur={guardar}
           aria-label="Peso en kg"
-          className="w-20 text-sm rounded border border-sand px-1.5 py-0.5 bg-white focus:border-sage outline-none"
+          className="w-20 text-sm campo rounded px-1.5 py-0.5"
         />
       </form>
     );
@@ -253,8 +253,8 @@ function PesoEditable({ peso, onChange }: { peso: number | null; onChange: (peso
       aria-label="Editar peso"
       className={`shrink-0 text-sm px-1.5 py-0.5 rounded-full border tabular-nums ${
         peso !== null
-          ? "border-sage/40 text-sagedark bg-sage/10 hover:bg-sage/20 font-semibold"
-          : "border-sand text-ink/30 hover:text-sage"
+          ? "border-acento/40 text-acentovivo bg-acento/10 hover:bg-acento/20 font-semibold"
+          : "border-borde text-tinta/30 hover:text-acento"
       }`}
     >
       {peso !== null ? kg(peso) : "+ kg"}

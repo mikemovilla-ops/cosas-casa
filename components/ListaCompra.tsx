@@ -102,7 +102,7 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="¿Qué necesitamos comprar?"
-          className="flex-1 min-w-[10rem] rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="flex-1 min-w-[10rem] campo px-3 py-2"
         />
         <input
           type="number"
@@ -110,12 +110,12 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
           value={cantidad}
           onChange={(e) => setCantidad(Math.max(1, Number(e.target.value) || 1))}
           aria-label="Cantidad"
-          className="w-16 rounded-md border border-sand px-2 py-2 bg-white focus:border-sage outline-none"
+          className="w-16 campo px-2 py-2"
         />
         <select
           value={asignadoAId}
           onChange={(e) => setAsignadoAId(e.target.value)}
-          className="rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="campo px-3 py-2"
         >
           <option value="">Los dos</option>
           {usuarios.map((u) => (
@@ -127,7 +127,7 @@ export default function ListaCompra({ usuarios }: { usuarios: Usuario[] }) {
         <button
           type="submit"
           disabled={!texto.trim() || enviando}
-          className="bg-sage text-white font-medium px-4 py-2 rounded-md hover:bg-sagedark transition disabled:opacity-40"
+          className="btn-acento"
         >
           Añadir
         </button>
@@ -206,7 +206,7 @@ function Columna({
             con el border-top que divide-y pone entre filas y deja una
             muesca justo en la esquina en la segunda fila urgente en
             adelante. Así siempre queda sólida. */}
-        {item.urgente && <span className="absolute inset-y-0 left-0 w-1 bg-clay" />}
+        {item.urgente && <span className="absolute inset-y-0 left-0 w-1 bg-coral" />}
         {asaProps && <AsaArrastre asaProps={asaProps} />}
         {!tachado && <BotonUrgente urgente={item.urgente} onChange={(u) => onUrgente(item, u)} />}
         <AsignadoBadge usuarios={usuarios} asignadoAId={item.asignadoAId} onChange={(id) => onAsignar(item, id)} />
@@ -214,7 +214,7 @@ function Columna({
           {(texto) => (
             <button
               onClick={() => onToggle(item)}
-              className={`flex-1 text-left ${tachado ? "line-through text-ink/40" : "text-ink"}`}
+              className={`flex-1 text-left ${tachado ? "line-through text-tinta/40" : "text-tinta"}`}
             >
               {texto}
             </button>
@@ -224,7 +224,7 @@ function Columna({
         <button
           onClick={() => onEliminar(item.id)}
           aria-label="Eliminar"
-          className="text-ink/30 hover:text-clay transition px-1"
+          className="text-tinta/30 hover:text-coral transition px-1"
         >
           ✕
         </button>
@@ -235,15 +235,15 @@ function Columna({
   return (
     <ColumnaDesplegable titulo={titulo} count={items.length}>
       {items.length === 0 ? (
-        <p className="text-ink/40 text-sm italic">{vacio}</p>
+        <p className="text-tinta/40 text-sm italic">{vacio}</p>
       ) : ordenable ? (
-        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand overflow-hidden">
+        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-borde overflow-hidden">
           {(item) => (
             <FilaOrdenable
               key={item.id}
               id={item.id}
               className={`relative flex items-center gap-2 py-2 ${
-                item.urgente ? "bg-clay/15 pl-4 pr-3" : "px-3"
+                item.urgente ? "bg-coral/15 pl-4 pr-3" : "px-3"
               }`}
             >
               {({ asaProps }) => fila(item, asaProps)}
@@ -251,7 +251,7 @@ function Columna({
           )}
         </ListaOrdenable>
       ) : (
-        <ul className="card divide-y divide-sand">
+        <ul className="card divide-y divide-borde">
           {items.map((item) => (
             <li key={item.id} className="flex items-center gap-2 px-3 py-2">
               {fila(item)}

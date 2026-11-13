@@ -86,7 +86,7 @@ export function AsaArrastre({ asaProps }: { asaProps: React.HTMLAttributes<HTMLE
     <span
       {...asaProps}
       aria-label="Arrastrar para reordenar"
-      className="shrink-0 text-ink/20 hover:text-ink/50 cursor-grab active:cursor-grabbing px-0.5 touch-none select-none"
+      className="shrink-0 text-tinta/20 hover:text-tinta/50 cursor-grab active:cursor-grabbing px-0.5 touch-none select-none"
     >
       ⠿
     </span>
