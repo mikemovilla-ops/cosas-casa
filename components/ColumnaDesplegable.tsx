@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 export default function ColumnaDesplegable({
   titulo,
   count,
-  colorClass = "text-sagedark",
+  colorClass = "text-acentovivo",
   extra,
   children,
 }: {
@@ -35,13 +35,13 @@ export default function ColumnaDesplegable({
         type="button"
         onClick={() => setAbierta((v) => !v)}
         aria-expanded={abierta}
-        className={`w-full flex items-center justify-between gap-2 mb-2 -mx-2 px-2 py-1 rounded-md text-left font-semibold hover:bg-sand/30 transition ${colorClass}`}
+        className={`w-full flex items-center justify-between gap-2 mb-2 -mx-2 px-2 py-1 rounded-lg text-left font-display text-lg font-bold hover:bg-white/5 transition ${colorClass}`}
       >
         <span>
-          {titulo} <span className="text-ink/40 font-normal">({count})</span>
+          {titulo} <span className="font-body text-sm text-tinta/40 font-normal">({count})</span>
         </span>
         <span
-          className={`shrink-0 flex items-center justify-center w-6 h-6 rounded-full border border-sand bg-white text-sage text-sm transition-transform ${
+          className={`shrink-0 flex items-center justify-center w-6 h-6 rounded-full border border-borde bg-superficie text-acento text-sm transition-transform ${
             abierta ? "" : "-rotate-90"
           }`}
         >

@@ -12,7 +12,7 @@ export default function EnlaceIndicador({ enlace }: { enlace: string }) {
       rel="noopener noreferrer"
       title="Abrir enlace"
       aria-label="Abrir enlace de compra"
-      className="shrink-0 text-sage hover:text-sagedark px-0.5"
+      className="shrink-0 text-acento hover:text-acentovivo px-0.5"
     >
       <svg
         viewBox="0 0 24 24"

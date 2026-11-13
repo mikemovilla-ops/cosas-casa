@@ -38,19 +38,19 @@ export default function EnlaceCasa({
           value={valor}
           onChange={(e) => setValor(e.target.value)}
           placeholder="https://..."
-          className="w-full text-sm rounded border border-sand px-1.5 py-1 bg-white focus:border-sage outline-none"
+          className="w-full text-sm campo rounded px-1.5 py-1"
         />
         <div className="flex gap-1">
           <button
             type="submit"
-            className="flex-1 text-xs bg-sage text-white rounded px-2 py-1 hover:bg-sagedark transition"
+            className="flex-1 text-xs bg-acento text-fondooscuro rounded px-2 py-1 hover:bg-acentovivo transition"
           >
             Guardar
           </button>
           <button
             type="button"
             onClick={() => setEditando(false)}
-            className="text-xs text-ink/40 hover:text-ink/70 px-2"
+            className="text-xs text-tinta/40 hover:text-tinta/70 px-2"
           >
             Cancelar
           </button>
@@ -66,7 +66,7 @@ export default function EnlaceCasa({
           setValor(enlace ?? "");
           setEditando(true);
         }}
-        className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition text-ink"
+        className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-borde/40 transition text-tinta"
       >
         {enlace ? "✎ Editar enlace" : "+ Añadir enlace"}
       </button>
@@ -76,7 +76,7 @@ export default function EnlaceCasa({
             onChange(null);
             cerrar();
           }}
-          className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition text-clay"
+          className="w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-borde/40 transition text-coral"
         >
           ✕ Quitar enlace
         </button>

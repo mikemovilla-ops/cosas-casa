@@ -42,7 +42,7 @@ export default function FechaEditable({
           value={valor}
           onChange={(e) => setValor(e.target.value)}
           onBlur={guardar}
-          className="text-xs rounded border border-sand px-1 py-0.5 bg-white focus:border-sage outline-none"
+          className="text-xs campo rounded px-1 py-0.5"
         />
         {fecha && permitirBorrar && (
           <button
@@ -52,7 +52,7 @@ export default function FechaEditable({
               setEditando(false);
             }}
             aria-label="Quitar fecha"
-            className="text-ink/30 hover:text-clay px-0.5"
+            className="text-tinta/30 hover:text-coral px-0.5"
           >
             ✕
           </button>
@@ -67,7 +67,7 @@ export default function FechaEditable({
       onClick={abrir}
       title="Editar fecha"
       aria-label="Editar fecha"
-      className={`shrink-0 text-[11px] px-0.5 ${fecha ? "text-ink/35 hover:text-sage" : "text-ink/25 hover:text-sage"}`}
+      className={`shrink-0 text-[11px] px-0.5 ${fecha ? "text-tinta/35 hover:text-acento" : "text-tinta/25 hover:text-acento"}`}
     >
       {fecha ? formatoCorto(fecha) : etiquetaVacio}
     </button>

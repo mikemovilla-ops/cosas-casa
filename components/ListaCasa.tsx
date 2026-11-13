@@ -25,9 +25,9 @@ import MenuAccionesItem from "./MenuAccionesItem";
 // detectarlas al compilar — de ahí el mapa en vez de construir el nombre
 // de la clase dinámicamente con un template string.
 const CATEGORIAS: { estado: EstadoItem; label: string; textClass: string }[] = [
-  { estado: "URGENTE", label: "Urgente", textClass: "text-clay" },
-  { estado: "MEDIO", label: "Medio plazo", textClass: "text-mustard" },
-  { estado: "LARGO", label: "Largo plazo", textClass: "text-sagedark" },
+  { estado: "URGENTE", label: "Urgente", textClass: "text-coral" },
+  { estado: "MEDIO", label: "Medio plazo", textClass: "text-ambar" },
+  { estado: "LARGO", label: "Largo plazo", textClass: "text-acentovivo" },
 ];
 
 // Al añadir un item solo tiene sentido elegir una urgencia — "Comprado" es
@@ -36,7 +36,7 @@ const CATEGORIAS: { estado: EstadoItem; label: string; textClass: string }[] = [
 // directamente a comprado (y deshacerlo si hace falta).
 const COLUMNAS = [
   ...CATEGORIAS,
-  { estado: "COMPRADO" as EstadoItem, label: "Comprado/Hecho ✓", textClass: "text-emerald-600" },
+  { estado: "COMPRADO" as EstadoItem, label: "Comprado/Hecho ✓", textClass: "text-exito" },
 ];
 
 export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
@@ -116,7 +116,7 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="¿Qué necesitamos para la casa?"
-          className="flex-1 min-w-[10rem] rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="flex-1 min-w-[10rem] campo px-3 py-2"
         />
         <input
           type="number"
@@ -124,12 +124,12 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
           value={cantidad}
           onChange={(e) => setCantidad(Math.max(1, Number(e.target.value) || 1))}
           aria-label="Cantidad"
-          className="w-16 rounded-md border border-sand px-2 py-2 bg-white focus:border-sage outline-none"
+          className="w-16 campo px-2 py-2"
         />
         <select
           value={categoria}
           onChange={(e) => setCategoria(e.target.value as EstadoItem)}
-          className="rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="campo px-3 py-2"
         >
           {CATEGORIAS.map((c) => (
             <option key={c.estado} value={c.estado}>
@@ -140,7 +140,7 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
         <select
           value={asignadoAId}
           onChange={(e) => setAsignadoAId(e.target.value)}
-          className="rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="campo px-3 py-2"
         >
           <option value="">Los dos</option>
           {usuarios.map((u) => (
@@ -152,7 +152,7 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
         <button
           type="submit"
           disabled={!texto.trim() || enviando}
-          className="bg-sage text-white font-medium px-4 py-2 rounded-md hover:bg-sagedark transition disabled:opacity-40"
+          className="btn-acento"
         >
           Añadir
         </button>
@@ -180,11 +180,11 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
               />
               <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
                 {(texto) => (
-                  <span className={`flex-1 ${comprado ? "line-through text-emerald-600/70" : ""}`}>{texto}</span>
+                  <span className={`flex-1 ${comprado ? "line-through text-exito/70" : ""}`}>{texto}</span>
                 )}
               </NombreEditable>
               {item.cantidad > 1 && (
-                <span className="shrink-0 text-xs font-semibold text-clay">×{item.cantidad}</span>
+                <span className="shrink-0 text-xs font-semibold text-coral">×{item.cantidad}</span>
               )}
               {item.enlace && <EnlaceIndicador enlace={item.enlace} />}
               <MenuAccionesItem>
@@ -193,21 +193,21 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                   return (
                     <>
                       {creador && (
-                        <p className="text-[11px] text-ink/40 px-1.5 pb-1.5">
+                        <p className="text-[11px] text-tinta/40 px-1.5 pb-1.5">
                           Añadido por {creador.name?.split(" ")[0] ?? creador.email}
                         </p>
                       )}
 
-                      <p className="text-xs text-ink/40 px-1.5 pb-1">Cantidad</p>
+                      <p className="text-xs text-tinta/40 px-1.5 pb-1">Cantidad</p>
                       <div className="px-1.5 pb-2">
                         <CantidadStepper cantidad={item.cantidad} onChange={(n) => cambiarCantidad(item, n)} />
                       </div>
 
-                      <div className="border-t border-sand mb-1" />
+                      <div className="border-t border-borde mb-1" />
                       <EnlaceCasa enlace={item.enlace} onChange={(url) => cambiarEnlace(item, url)} cerrar={cerrar} />
 
-                      <div className="border-t border-sand my-1" />
-                      <p className="text-xs text-ink/40 px-1.5 pb-1">Mover a</p>
+                      <div className="border-t border-borde my-1" />
+                      <p className="text-xs text-tinta/40 px-1.5 pb-1">Mover a</p>
                       {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => {
                         const indiceActual = COLUMNAS.findIndex((cc) => cc.estado === item.estado);
                         const indiceDestino = COLUMNAS.findIndex((cc) => cc.estado === c.estado);
@@ -225,8 +225,8 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                               mover(item, c.estado);
                               cerrar();
                             }}
-                            className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition ${
-                              c.estado === "COMPRADO" ? "text-emerald-600" : "text-ink"
+                            className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-borde/40 transition ${
+                              c.estado === "COMPRADO" ? "text-exito" : "text-tinta"
                             }`}
                           >
                             {/* La fuente convierte "-->"/"<--" en una sola
@@ -244,7 +244,7 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
               <button
                 onClick={() => eliminar(item.id)}
                 aria-label="Eliminar"
-                className="text-ink/30 hover:text-clay transition px-1"
+                className="text-tinta/30 hover:text-coral transition px-1"
               >
                 ✕
               </button>
@@ -254,9 +254,9 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
           return (
             <ColumnaDesplegable key={cat.estado} titulo={cat.label} count={itemsColumna.length} colorClass={cat.textClass}>
               {itemsColumna.length === 0 ? (
-                <p className="text-ink/40 text-sm italic">Nada por aquí</p>
+                <p className="text-tinta/40 text-sm italic">Nada por aquí</p>
               ) : comprado ? (
-                <ul className="card divide-y divide-sand">
+                <ul className="card divide-y divide-borde">
                   {itemsColumna.map((item) => (
                     <li key={item.id} className="px-3 py-2">
                       {fila(item)}
@@ -264,7 +264,7 @@ export default function ListaCasa({ usuarios }: { usuarios: Usuario[] }) {
                   ))}
                 </ul>
               ) : (
-                <ListaOrdenable items={itemsColumna} onReordenar={reordenar} className="card divide-y divide-sand">
+                <ListaOrdenable items={itemsColumna} onReordenar={reordenar} className="card divide-y divide-borde">
                   {(item) => (
                     <FilaOrdenable key={item.id} id={item.id} className="px-3 py-2">
                       {({ asaProps }) => fila(item, asaProps)}

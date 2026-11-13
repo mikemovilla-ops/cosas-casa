@@ -29,9 +29,9 @@ import MenuAccionesItem from "./MenuAccionesItem";
 // detectarlas al compilar — de ahí el mapa en vez de construir el nombre
 // de la clase dinámicamente con un template string.
 const COLUMNAS: { estado: EstadoItem; label: string; textClass: string }[] = [
-  { estado: "PENDIENTE", label: "Pendiente", textClass: "text-sagedark" },
-  { estado: "EN_CURSO", label: "En curso", textClass: "text-mustard" },
-  { estado: "HECHO", label: "Vista ✓", textClass: "text-emerald-600" },
+  { estado: "PENDIENTE", label: "Pendiente", textClass: "text-acentovivo" },
+  { estado: "EN_CURSO", label: "En curso", textClass: "text-ambar" },
+  { estado: "HECHO", label: "Vista ✓", textClass: "text-exito" },
 ];
 
 function nombreCorto(usuarios: Usuario[], userId: string) {
@@ -136,12 +136,12 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="¿Qué peli o serie?"
-          className="flex-1 min-w-[10rem] rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="flex-1 min-w-[10rem] campo px-3 py-2"
         />
         <select
           value={tipoContenido}
           onChange={(e) => setTipoContenido(e.target.value as TipoContenido)}
-          className="rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="campo px-3 py-2"
         >
           <option value="PELICULA">🎬 Película</option>
           <option value="SERIE">📺 Serie</option>
@@ -150,12 +150,12 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
           value={plataforma}
           onChange={(e) => setPlataforma(e.target.value)}
           placeholder="Plataforma (opcional)"
-          className="w-40 rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="w-40 campo px-3 py-2"
         />
         <select
           value={asignadoAId}
           onChange={(e) => setAsignadoAId(e.target.value)}
-          className="rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="campo px-3 py-2"
         >
           <option value="">Los dos</option>
           {usuarios.map((u) => (
@@ -167,7 +167,7 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
         <button
           type="submit"
           disabled={!texto.trim() || enviando}
-          className="bg-sage text-white font-medium px-4 py-2 rounded-md hover:bg-sagedark transition disabled:opacity-40"
+          className="btn-acento"
         >
           Añadir
         </button>
@@ -205,12 +205,12 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
               />
               <NombreEditable texto={item.texto} onGuardar={(t) => renombrar(item, t)}>
                 {(texto) => (
-                  <span className={`flex-1 ${vista ? "text-emerald-600/70" : ""}`}>{texto}</span>
+                  <span className={`flex-1 ${vista ? "text-exito/70" : ""}`}>{texto}</span>
                 )}
               </NombreEditable>
               {item.plataforma && <PlataformaIndicador plataforma={item.plataforma} />}
               {vista && media !== null && (
-                <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded-full border border-mustard/40 text-mustard bg-mustard/10">
+                <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded-full border border-ambar/40 text-ambar bg-ambar/10">
                   ⭐ {media.toFixed(1)}/10
                 </span>
               )}
@@ -220,12 +220,12 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                   return (
                     <>
                       {creador && (
-                        <p className="text-[11px] text-ink/40 px-1.5 pb-1.5">
+                        <p className="text-[11px] text-tinta/40 px-1.5 pb-1.5">
                           Añadido por {creador.name?.split(" ")[0] ?? creador.email}
                         </p>
                       )}
 
-                      <p className="text-xs text-ink/40 px-1.5 pb-1">Plataforma</p>
+                      <p className="text-xs text-tinta/40 px-1.5 pb-1">Plataforma</p>
                       <div className="px-1.5 pb-2">
                         <PlataformaEditable
                           plataforma={item.plataforma}
@@ -235,13 +235,13 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
 
                       {vista && (
                         <>
-                          <p className="text-xs text-ink/40 px-1.5 pb-1">Tu nota</p>
+                          <p className="text-xs text-tinta/40 px-1.5 pb-1">Tu nota</p>
                           <select
                             value={miResena?.nota ?? ""}
                             onChange={(e) =>
                               cambiarResena(item, { nota: e.target.value ? Number(e.target.value) : null })
                             }
-                            className="w-full mb-2 text-sm rounded border border-sand px-1.5 py-1 bg-white focus:border-sage outline-none"
+                            className="w-full mb-2 text-sm campo rounded px-1.5 py-1"
                           >
                             <option value="">Sin nota</option>
                             {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
@@ -251,7 +251,7 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                             ))}
                           </select>
 
-                          <p className="text-xs text-ink/40 px-1.5 pb-1">Tu comentario</p>
+                          <p className="text-xs text-tinta/40 px-1.5 pb-1">Tu comentario</p>
                           <div className="px-1.5 pb-2">
                             <ComentarioEditable
                               comentario={miResena?.comentario ?? null}
@@ -261,13 +261,13 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
 
                           {comentarios.length > 0 && (
                             <>
-                              <div className="border-t border-sand my-1" />
-                              <p className="text-xs text-ink/40 px-1.5 pb-1">Comentarios</p>
+                              <div className="border-t border-borde my-1" />
+                              <p className="text-xs text-tinta/40 px-1.5 pb-1">Comentarios</p>
                               <div className="px-1.5 pb-1 space-y-1.5">
                                 {comentarios.map((r) => (
-                                  <p key={r.userId} className="text-xs text-ink/70">
-                                    <span className="font-medium text-ink">{nombreCorto(usuarios, r.userId)}</span>
-                                    {r.nota && <span className="text-mustard"> ({r.nota}/10)</span>}: {r.comentario}
+                                  <p key={r.userId} className="text-xs text-tinta/70">
+                                    <span className="font-medium text-tinta">{nombreCorto(usuarios, r.userId)}</span>
+                                    {r.nota && <span className="text-ambar"> ({r.nota}/10)</span>}: {r.comentario}
                                   </p>
                                 ))}
                               </div>
@@ -276,8 +276,8 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                         </>
                       )}
 
-                      <div className="border-t border-sand my-1" />
-                      <p className="text-xs text-ink/40 px-1.5 pb-1">Mover a</p>
+                      <div className="border-t border-borde my-1" />
+                      <p className="text-xs text-tinta/40 px-1.5 pb-1">Mover a</p>
                       {COLUMNAS.filter((c) => c.estado !== item.estado).map((c) => {
                         const indiceActual = COLUMNAS.findIndex((cc) => cc.estado === item.estado);
                         const indiceDestino = COLUMNAS.findIndex((cc) => cc.estado === c.estado);
@@ -295,8 +295,8 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                               mover(item, c.estado);
                               cerrar();
                             }}
-                            className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-sand/40 transition ${
-                              c.estado === "HECHO" ? "text-emerald-600" : "text-ink"
+                            className={`w-full text-left text-sm px-1.5 py-1.5 rounded hover:bg-borde/40 transition ${
+                              c.estado === "HECHO" ? "text-exito" : "text-tinta"
                             }`}
                           >
                             {/* La fuente convierte "-->"/"<--" en una sola
@@ -314,7 +314,7 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
               <button
                 onClick={() => eliminar(item.id)}
                 aria-label="Eliminar"
-                className="text-ink/30 hover:text-clay transition px-1"
+                className="text-tinta/30 hover:text-coral transition px-1"
               >
                 ✕
               </button>
@@ -325,9 +325,9 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
           return (
             <ColumnaDesplegable key={cat.estado} titulo={cat.label} count={itemsColumna.length} colorClass={cat.textClass}>
               {itemsColumna.length === 0 ? (
-                <p className="text-ink/40 text-sm italic">Nada por aquí</p>
+                <p className="text-tinta/40 text-sm italic">Nada por aquí</p>
               ) : vista ? (
-                <ul className="card divide-y divide-sand">
+                <ul className="card divide-y divide-borde">
                   {itemsColumna.map((item) => (
                     <li key={item.id} className="px-3 py-2">
                       {fila(item)}
@@ -335,7 +335,7 @@ export default function ListaPelisSeries({ usuarios }: { usuarios: Usuario[] }) 
                   ))}
                 </ul>
               ) : (
-                <ListaOrdenable items={itemsColumna} onReordenar={reordenar} className="card divide-y divide-sand">
+                <ListaOrdenable items={itemsColumna} onReordenar={reordenar} className="card divide-y divide-borde">
                   {(item) => (
                     <FilaOrdenable key={item.id} id={item.id} className="px-3 py-2">
                       {({ asaProps }) => fila(item, asaProps)}

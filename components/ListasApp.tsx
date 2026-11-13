@@ -16,13 +16,13 @@ import ListaGym from "./ListaGym";
 // ve resaltada junto al resto, pero en móvil la barra inferior deja poco
 // margen para eso, así que cada página repite su título arriba del todo.
 const TITULOS: Record<Vista, string> = {
-  compra: "🛒 Compra",
-  casa: "🏠 Casa",
-  pelisseries: "🎬 Pelis/Series",
-  restaurantes: "🍽️ Restaurantes",
-  tareas: "✅ Tareas",
-  deudas: "💶 Deudas",
-  gym: "🏋️ Gym",
+  compra: "Compra",
+  casa: "Casa",
+  pelisseries: "Pelis y series",
+  restaurantes: "Restaurantes",
+  tareas: "Tareas",
+  deudas: "Deudas",
+  gym: "Gym",
 };
 
 export default function ListasApp() {
@@ -46,7 +46,7 @@ export default function ListasApp() {
     <div
       className={`transition-opacity duration-300 ${cambiando ? "max-md:opacity-40" : "max-md:opacity-100"}`}
     >
-      <h1 className="md:hidden text-xl font-semibold text-sagedark mb-4">{TITULOS[vista]}</h1>
+      <h1 className="md:hidden font-display text-3xl font-bold mb-5">{TITULOS[vista]}</h1>
       {vista === "compra" && <ListaCompra usuarios={usuarios} />}
       {vista === "casa" && <ListaCasa usuarios={usuarios} />}
       {vista === "pelisseries" && <ListaPelisSeries usuarios={usuarios} />}

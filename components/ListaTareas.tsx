@@ -83,12 +83,12 @@ export default function ListaTareas() {
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="¿Qué tienes pendiente?"
-          className="flex-1 min-w-[10rem] rounded-md border border-sand px-3 py-2 bg-white focus:border-sage outline-none"
+          className="flex-1 min-w-[10rem] campo px-3 py-2"
         />
         <button
           type="submit"
           disabled={!texto.trim() || enviando}
-          className="bg-sage text-white font-medium px-4 py-2 rounded-md hover:bg-sagedark transition disabled:opacity-40"
+          className="btn-acento"
         >
           Añadir
         </button>
@@ -157,14 +157,14 @@ function Columna({
       <>
         {/* Barra roja aparte (no border-l): ver el comentario equivalente en
             ListaCompra sobre la muesca con el border-top de divide-y. */}
-        {item.urgente && <span className="absolute inset-y-0 left-0 w-1 bg-clay" />}
+        {item.urgente && <span className="absolute inset-y-0 left-0 w-1 bg-coral" />}
         {asaProps && <AsaArrastre asaProps={asaProps} />}
         {!tachado && <BotonUrgente urgente={item.urgente} onChange={(u) => onUrgente(item, u)} />}
         <NombreEditable texto={item.texto} onGuardar={(t) => onRenombrar(item, t)}>
           {(texto) => (
             <button
               onClick={() => onToggle(item)}
-              className={`flex-1 text-left ${tachado ? "line-through text-emerald-600/70" : "text-ink"}`}
+              className={`flex-1 text-left ${tachado ? "line-through text-exito/70" : "text-tinta"}`}
             >
               {texto}
             </button>
@@ -174,7 +174,7 @@ function Columna({
         <button
           onClick={() => onEliminar(item.id)}
           aria-label="Eliminar"
-          className="text-ink/30 hover:text-clay transition px-1"
+          className="text-tinta/30 hover:text-coral transition px-1"
         >
           ✕
         </button>
@@ -183,23 +183,23 @@ function Columna({
   }
 
   return (
-    <ColumnaDesplegable titulo={titulo} count={items.length} colorClass={tachado ? "text-emerald-600" : "text-sagedark"}>
+    <ColumnaDesplegable titulo={titulo} count={items.length} colorClass={tachado ? "text-exito" : "text-acentovivo"}>
       {items.length === 0 ? (
-        <p className="text-ink/40 text-sm italic">{vacio}</p>
+        <p className="text-tinta/40 text-sm italic">{vacio}</p>
       ) : ordenable ? (
-        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-sand overflow-hidden">
+        <ListaOrdenable items={items} onReordenar={onReordenar} className="card divide-y divide-borde overflow-hidden">
           {(item) => (
             <FilaOrdenable
               key={item.id}
               id={item.id}
-              className={`relative flex items-center gap-2 py-2 ${item.urgente ? "bg-clay/15 pl-4 pr-3" : "px-3"}`}
+              className={`relative flex items-center gap-2 py-2 ${item.urgente ? "bg-coral/15 pl-4 pr-3" : "px-3"}`}
             >
               {({ asaProps }) => fila(item, asaProps)}
             </FilaOrdenable>
           )}
         </ListaOrdenable>
       ) : (
-        <ul className="card divide-y divide-sand">
+        <ul className="card divide-y divide-borde">
           {items.map((item) => (
             <li key={item.id} className="flex items-center gap-2 px-3 py-2">
               {fila(item)}

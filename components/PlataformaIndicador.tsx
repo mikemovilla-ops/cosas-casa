@@ -5,7 +5,7 @@
 // el menú "⋯" (PlataformaEditable), no tocando este badge.
 export default function PlataformaIndicador({ plataforma }: { plataforma: string }) {
   return (
-    <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded-full border border-sage/40 text-sagedark bg-sage/10">
+    <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded-full border border-acento/40 text-acentovivo bg-acento/10">
       {plataforma}
     </span>
   );

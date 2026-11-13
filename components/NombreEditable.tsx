@@ -41,7 +41,7 @@ export default function NombreEditable({
           onChange={(e) => setValor(e.target.value)}
           onBlur={guardar}
           onKeyDown={(e) => e.key === "Escape" && setEditando(false)}
-          className="w-full text-sm rounded border border-sand px-1.5 py-0.5 bg-white focus:border-sage outline-none"
+          className="w-full text-sm campo rounded px-1.5 py-0.5"
         />
       </form>
     );
@@ -54,7 +54,7 @@ export default function NombreEditable({
         type="button"
         onClick={abrir}
         aria-label="Editar nombre"
-        className="shrink-0 text-ink/25 hover:text-sage text-[11px] px-0.5"
+        className="shrink-0 text-tinta/25 hover:text-acento text-[11px] px-0.5"
       >
         ✎
       </button>
